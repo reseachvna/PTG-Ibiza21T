@@ -1,0 +1,458 @@
+[
+  {
+    "ma_can": "SIB.09",
+    "Dien_tich": "66.1",
+    "Tong_gia": " 3,714,000,000 ",
+    "Type": "Ibiza shophouse"
+  },
+  {
+    "ma_can": "IB.201",
+    "Dien_tich": "85.8",
+    "Tong_gia": " 4,542,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.207",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.209",
+    "Dien_tich": "33.4",
+    "Tong_gia": " 1,436,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.211",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.215A",
+    "Dien_tich": "33.4",
+    "Tong_gia": " 1,436,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.215",
+    "Dien_tich": "33.5",
+    "Tong_gia": " 1,440,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.217",
+    "Dien_tich": "33.5",
+    "Tong_gia": " 1,440,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.219",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.221",
+    "Dien_tich": "37.9",
+    "Tong_gia": " 1,623,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.223",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 1,431,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.225",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.227",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.206",
+    "Dien_tich": "45.4",
+    "Tong_gia": " 2,047,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.218",
+    "Dien_tich": "33.5",
+    "Tong_gia": " 1,449,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.232",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,428,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.301",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,562,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.307",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.309",
+    "Dien_tich": "33.4",
+    "Tong_gia": " 1,436,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.319",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.321",
+    "Dien_tich": "37.9",
+    "Tong_gia": " 1,623,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.327",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.326",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,437,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.332",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,437,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.334",
+    "Dien_tich": "40.4",
+    "Tong_gia": " 1,813,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A01",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,562,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A03",
+    "Dien_tich": "37.7",
+    "Tong_gia": " 1,615,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A23",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 1,431,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A25",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A04",
+    "Dien_tich": "44.3",
+    "Tong_gia": " 2,006,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A16",
+    "Dien_tich": "33.4",
+    "Tong_gia": " 1,463,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A20",
+    "Dien_tich": "33.1",
+    "Tong_gia": " 1,450,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A22",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,446,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A24",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,446,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A26",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,446,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.5A34",
+    "Dien_tich": "40.4",
+    "Tong_gia": " 1,813,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.509",
+    "Dien_tich": "33.4",
+    "Tong_gia": " 1,436,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.515A",
+    "Dien_tich": "33.4",
+    "Tong_gia": " 1,436,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.517",
+    "Dien_tich": "33.5",
+    "Tong_gia": " 1,440,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.519",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,419,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.529",
+    "Dien_tich": "40.4",
+    "Tong_gia": " 1,813,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.520",
+    "Dien_tich": "33.1",
+    "Tong_gia": " 1,460,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.528",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,455,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.601",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,586,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.701",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,609,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.707",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,437,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.901",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,657,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.926",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,492,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.928",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,492,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1002",
+    "Dien_tich": "60.3",
+    "Tong_gia": " 3,300,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1101",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,656,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1201",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,728,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.15A01",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,752,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.15A04",
+    "Dien_tich": "44.3",
+    "Tong_gia": " 2,116,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.15B01",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,775,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.15B34",
+    "Dien_tich": "40.4",
+    "Tong_gia": " 1,880,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1602",
+    "Dien_tich": "60.3",
+    "Tong_gia": " 3,399,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1632",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,539,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1701",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 4,847,000,000 ",
+    "Type": "Ibiza ABTel"
+  },
+  {
+    "ma_can": "IB.1801",
+    "Dien_tich": "86.2",
+    "Tong_gia": " 6,101,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1815A",
+    "Dien_tich": "33.7",
+    "Tong_gia": " 1,975,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1816A",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 1,988,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1820",
+    "Dien_tich": "33.1",
+    "Tong_gia": " 1,976,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1828",
+    "Dien_tich": "33.0",
+    "Tong_gia": " 1,970,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1915",
+    "Dien_tich": "33.6",
+    "Tong_gia": " 1,978,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1904",
+    "Dien_tich": "44.3",
+    "Tong_gia": " 2,670,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.1916A",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 1,997,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2011",
+    "Dien_tich": "33.9",
+    "Tong_gia": " 2,006,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2027",
+    "Dien_tich": "40.7",
+    "Tong_gia": " 2,499,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2008",
+    "Dien_tich": "33.6",
+    "Tong_gia": " 2,025,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2018",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 2,006,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2020",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 2,006,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2022",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 2,006,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2024",
+    "Dien_tich": "33.3",
+    "Tong_gia": " 2,006,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2101",
+    "Dien_tich": "33.8",
+    "Tong_gia": " 2,009,000,000 ",
+    "Type": "Ibiza Residence"
+  },
+  {
+    "ma_can": "IB.2107",
+    "Dien_tich": "40.7",
+    "Tong_gia": " 2,510,000,000 ",
+    "Type": "Ibiza Residence"
+  }
+]

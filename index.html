@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Tính Giá Flamingo Golden Hill</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; margin: 0; padding: 20px;}
+        .container { max-width: 1200px; margin: 10px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #1a365d; text-transform: uppercase; margin-bottom: 5px; font-size: 26px; text-align: center;}
+        h2 { color: #2d3748; font-weight: normal; margin-top: 0; margin-bottom: 30px; font-size: 20px; text-align: center;}
+        
+        #data-status { font-weight: bold; margin-bottom: 25px; padding: 10px; border-radius: 6px; display: inline-block; background: #f1f5f9; text-align: center;}
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: left; margin-bottom: 30px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 8px; color: #4a5568; }
+        .form-group input, .form-group select { padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 16px; outline: none; transition: 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: #1a365d; box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1); }
+        .form-group input:disabled, .form-group select:disabled { background-color: #edf2f7; cursor: not-allowed; }
+
+        .full-width { grid-column: span 3; }
+        .mode-selector { background: #edf2f7; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 30px; align-items: center; justify-content: center; }
+        .mode-selector label { cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        
+        .custom-discount-box { background: #fffaf0; border: 1px dashed #ed8936; padding: 20px; border-radius: 8px; margin-top: 10px; display: none; }
+        .custom-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .custom-table input { width: 90%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn-add { background: #2b6cb0; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .btn-remove { background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;}
+
+        .btn-main { background: #1a365d; color: white; border: none; padding: 18px 40px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
+        .btn-main:hover { background: #2c5282; transform: translateY(-2px); }
+
+        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-print:hover { background: #2f855a; }
+        .print-header-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a365d; margin-bottom: 20px; padding-bottom: 10px; }
+
+        #result-box { display: none; margin-top: 40px; padding-top: 30px; border-top: 2px solid #edf2f7; text-align: left; }
+        .result-header { color: #1a365d; margin: 0; font-size: 22px; }
+        
+        /* Cấu trúc hiển thị 2 cột */
+        .info-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 25px; }
+        .info-col { display: flex; flex-direction: column; gap: 12px; }
+        .info-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding-bottom: 5px; align-items: center;}
+        .info-item span { color: #718096; font-size: 15px; }
+        .info-item strong { color: #2d3748; font-size: 15px; }
+        
+        .price-highlight { background: #fff5f5; padding: 20px; border-radius: 8px; border: 1px solid #feb2b2; margin-bottom: 30px; }
+        
+        /* CẬP NHẬT CSS GIÁ SAU CHIẾT KHẤU CÂN ĐỐI KHI IN */
+        .final-price-container { 
+            border-top: 1px dashed #fc8181; 
+            margin-top: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #fff; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+        }
+        .final-price-label { font-size: 20px; color: #c53030; font-weight: bold; }
+        .final-price { color: #e53e3e; font-size: 20px; font-weight: bold; }
+        
+        .discount-detail { font-size: 15px; color: #4a5568; margin-top: 10px; padding-left: 20px; border-left: 3px solid #1a365d; }
+
+        table.schedule-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; }
+        .schedule-table th { background: #1a365d; color: white; padding: 12px; border: 1px solid #1a365d; text-align: center; font-size: 14px;}
+        .schedule-table td { border: 1px solid #cbd5e0; padding: 12px; vertical-align: middle; font-size: 14px;}
+        .schedule-table tr:nth-child(even) { background: #f7fafc; }
+        .td-center { text-align: center; }
+        .td-right { text-align: right; }
+
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; border-radius: 0; padding: 0; max-width: 100%; margin: 0; }
+            .no-print, .mode-selector, .form-grid, .btn-main, #custom-discount-box, #data-status { display: none !important; }
+            #result-box { display: block !important; border: none; margin-top: 0; padding-top: 0; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+            .price-highlight { border: 1px solid #ccc; background: #fff; padding: 15px; }
+            .final-price-container { border: 1px solid #fc8181; background: #fff5f5 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="text-align: center;" class="no-print">
+        <h1>Bảng tính giá & Tiến độ thanh toán</h1>
+        <h2>Dự án Flamingo Golden Hill</h2>
+        <div id="data-status">⏳ Đang khởi động hệ thống...</div>
+    </div>
+
+    <div class="mode-selector no-print">
+        <label><input type="radio" name="calc-mode" value="auto" checked onchange="toggleMode()"> TÍNH TỰ ĐỘNG</label>
+        <label><input type="radio" name="calc-mode" value="custom" onchange="toggleMode()"> TÙY CHỈNH</label>
+    </div>
+
+    <div class="form-grid no-print">
+        <div class="form-group">
+            <label>Tên khách hàng</label>
+            <input type="text" id="fullname" placeholder="Họ và tên khách hàng...">
+        </div>
+        <div class="form-group">
+            <label>Mã căn hộ</label>
+            <input type="text" id="apt-code" placeholder="Ví dụ: LK1.02">
+        </div>
+        <div class="form-group">
+            <label>Ngày đặt cọc</label>
+            <input type="date" id="deposit-date">
+        </div>
+        
+        <div class="form-group full-width">
+            <label>Phương thức thanh toán</label>
+            <select id="payment-plan">
+                <option value="36">Tiến độ chuẩn 36 tháng</option>
+                <option value="12">Tiến độ 12 tháng (Chiết khấu 10%)</option>
+                <option value="30">Thanh toán nhanh trong 30 ngày (Chiết khấu 15%)</option>
+            </select>
+        </div>
+
+        <div class="form-group full-width" id="auto-extra-discount-box" style="background: #ebf8ff; padding: 15px; border-radius: 6px; border: 1px dashed #3182ce;">
+            <label style="display: flex; align-items: center; gap: 10px; margin: 0; cursor: pointer; color: #2b6cb0; font-size: 16px;">
+                <input type="checkbox" id="enable-extra" onchange="toggleExtraDetails()" style="width: 20px; height: 20px;">
+                <strong>Áp dụng thêm chiết khấu bổ sung (Tính trên Tổng giá bán)</strong>
+            </label>
+            
+            <div id="extra-details" style="display: none; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <select id="extra-type" onchange="toggleExtraType()">
+                    <option value="percent">Tính theo Tỷ lệ (%)</option>
+                    <option value="amount">Tính theo Số tiền (VNĐ)</option>
+                </select>
+                <select id="extra-vat">
+                    <option value="after-vat">Tính trên mốc giá SAU VAT</option>
+                    <option value="before-vat">Tính trên mốc giá TRƯỚC VAT</option>
+                </select>
+                <input type="number" id="extra-value" placeholder="Nhập số % hoặc số tiền..." step="0.1">
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-discount-box" class="custom-discount-box no-print">
+        <label style="font-weight: bold; color: #c05621;">Nhập thủ công các mục chiết khấu (%):</label>
+        <table class="custom-table">
+            <thead><tr><th style="text-align: left;">Nội dung/Lý do</th><th style="text-align: left;">Tỷ lệ (%)</th><th></th></tr></thead>
+            <tbody id="custom-body">
+                <tr>
+                    <td><input type="text" class="c-name" placeholder="Ví dụ: Voucher quà tặng..."></td>
+                    <td><input type="number" class="c-rate" value="0" step="0.1"></td>
+                    <td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn-add" onclick="addRow()">+ Thêm dòng chiết khấu</button>
+    </div>
+
+    <button class="btn-main no-print" onclick="calculate()">TẠO PHIẾU TÍNH GIÁ</button>
+
+    <div id="result-box">
+        <div style="text-align: center; display: none; margin-bottom: 30px;" id="print-title-area">
+            <h1>Bảng tính giá & Tiến độ thanh toán</h1>
+            <h2>Dự án Flamingo Golden Hill</h2>
+        </div>
+
+        <div class="print-header-actions">
+            <h3 class="result-header">CHI TIẾT PHIẾU TÍNH GIÁ</h3>
+            <button class="btn-print no-print" onclick="inPhieu()">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+                TẢI PDF / IN PHIẾU
+            </button>
+        </div>
+        
+        <div class="info-grid-2col">
+            <div class="info-col">
+                <div class="info-item"><span>Khách hàng:</span> <strong id="out-name"></strong></div>
+                <div class="info-item"><span>Mã căn:</span> <strong id="out-code"></strong></div>
+                <div class="info-item"><span>Phân loại sản phẩm:</span> <strong id="out-type"></strong></div>
+                <div class="info-item"><span>Diện tích đất:</span> <strong><span id="out-area"></span> m2</strong></div>
+            </div>
+            <div class="info-col">
+                <div class="info-item"><span>Giá Đất (đã gồm VAT):</span> <strong id="out-price-land"></strong></div>
+                <div class="info-item"><span>Giá Xây (đã gồm VAT):</span> <strong id="out-price-build"></strong></div>
+                <div class="info-item" style="border-bottom: 2px solid #1a365d;"><span>Tổng Giá Niêm Yết (đã gồm VAT):</span> <strong id="out-price-total" style="font-size: 16px; color: #1a365d;"></strong></div>
+            </div>
+        </div>
+
+        <div class="price-highlight">
+            <div style="margin-bottom: 5px; font-weight: bold; color: #2d3748;">Chi tiết chiết khấu áp dụng:</div>
+            <div id="discount-breakdown" class="discount-detail"></div>
+            
+            <div class="final-price-container">
+                <span class="final-price-label">GIÁ SAU CHIẾT KHẤU:</span>
+                <span class="final-price" id="out-price-final"></span>
+            </div>
+        </div>
+
+        <h3 style="color: #1a365d; margin-bottom: 10px; font-size: 18px;">TIẾN ĐỘ THANH TOÁN CHI TIẾT</h3>
+        <div id="schedule-content"></div>
+
+        <div style="margin-top: 30px; text-align: right; font-style: italic; color: #666; font-size: 13px;">
+            Ngày xuất phiếu: <span id="current-print-date"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let masterData = [];
+
+    function initApp() {
+        const statusEl = document.getElementById('data-status');
+        const today = new Date();
+        document.getElementById('deposit-date').valueAsDate = today;
+        document.getElementById('current-print-date').innerText = getFormattedDate(today);
+
+        fetch('Data.json')
+            .then(res => res.json())
+            .then(data => {
+                masterData = Array.isArray(data) ? data : data[Object.keys(data)[0]];
+                statusEl.innerHTML = "🟢 Kết nối dữ liệu thành công!";
+                statusEl.style.color = "green";
+            })
+            .catch(err => {
+                statusEl.innerHTML = "🔴 Lỗi kết nối Data.json!";
+                statusEl.style.color = "red";
+            });
+    }
+    initApp();
+
+    function toggleMode() {
+        const mode = document.querySelector('input[name="calc-mode"]:checked').value;
+        document.getElementById('custom-discount-box').style.display = (mode === 'custom' ? 'block' : 'none');
+        document.getElementById('auto-extra-discount-box').style.display = (mode === 'auto' ? 'block' : 'none');
+    }
+
+    function toggleExtraDetails() {
+        const isChecked = document.getElementById('enable-extra').checked;
+        document.getElementById('extra-details').style.display = isChecked ? 'grid' : 'none';
+    }
+
+    function toggleExtraType() {
+        const type = document.getElementById('extra-type').value;
+        // Nếu chọn trừ thẳng theo số tiền thì vô hiệu hóa lựa chọn Trước/Sau VAT
+        document.getElementById('extra-vat').disabled = (type === 'amount');
+    }
+
+    function addRow() {
+        const row = `<tr>
+            <td><input type="text" class="c-name" placeholder="Lý do chiết khấu..."></td>
+            <td><input type="number" class="c-rate" value="0" step="0.1"></td>
+            <td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td>
+        </tr>`;
+        document.getElementById('custom-body').insertAdjacentHTML('beforeend', row);
+    }
+
+    function parseValue(val) {
+        if (!val) return 0;
+        return Number(String(val).replace(/[^0-9]/g, '')) || 0;
+    }
+
+    function formatMoney(num) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Math.round(num));
+    }
+
+    function getFormattedDate(dateObj) {
+        return `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+    }
+
+    function calculateDate(baseDate, daysToAdd) {
+        if (daysToAdd === null) return "Theo TB của CĐT";
+        let d = new Date(baseDate);
+        d.setDate(d.getDate() + daysToAdd);
+        return getFormattedDate(d);
+    }
+
+    function calculate() {
+        const codeInput = document.getElementById('apt-code').value.toUpperCase().trim();
+        const depositDate = document.getElementById('deposit-date').value;
+        
+        if (masterData.length === 0) return alert("Hệ thống chưa tải xong dữ liệu!");
+        if (!codeInput) return alert("Vui lòng nhập mã căn hộ!");
+
+        const apt = masterData.find(item => String(item.Ma_can).toUpperCase().trim() === codeInput);
+        if (!apt) return alert("Không tìm thấy mã căn: " + codeInput);
+
+        const mode = document.querySelector('input[name="calc-mode"]:checked').value;
+        const plan = document.getElementById('payment-plan').value;
+
+        let priceLand = parseValue(apt.Gia_Dat);
+        let priceBuild = parseValue(apt.Gia_Xay);
+        let basePrice = parseValue(apt.Tong_Gia);
+        
+        let currentPrice = basePrice;
+        let breakdown = "";
+
+        if (mode === 'auto') {
+            if (plan === '12') {
+                let disc = currentPrice * 0.10;
+                breakdown += `• Chiết khấu tiến độ 12 tháng (10%): <strong>-${formatMoney(disc)}</strong><br>`;
+                currentPrice -= disc;
+            } else if (plan === '30') {
+                let disc = currentPrice * 0.15;
+                breakdown += `• Chiết khấu thanh toán nhanh 30 ngày (15%): <strong>-${formatMoney(disc)}</strong><br>`;
+                currentPrice -= disc;
+            }
+
+            if (document.getElementById('enable-extra').checked) {
+                let extraVal = parseFloat(document.getElementById('extra-value').value) || 0;
+                if (extraVal > 0) {
+                    let extraType = document.getElementById('extra-type').value;
+                    let extraVatType = document.getElementById('extra-vat').value;
+                    
+                    if (extraType === 'amount') {
+                        breakdown += `• Chiết khấu bổ sung bằng tiền mặt: <strong>-${formatMoney(extraVal)}</strong><br>`;
+                        currentPrice -= extraVal;
+                    } else { 
+                        let baseForPercent = currentPrice;
+                        let textVAT = "Giá Sau VAT";
+                        
+                        if (extraVatType === 'before-vat') {
+                            baseForPercent = currentPrice / 1.1;
+                            textVAT = "Giá Trước VAT";
+                        }
+                        
+                        let extraDisc = baseForPercent * (extraVal / 100);
+                        breakdown += `• Chiết khấu bổ sung ${extraVal}% (Tính trên mốc ${textVAT}): <strong>-${formatMoney(extraDisc)}</strong><br>`;
+                        currentPrice -= extraDisc;
+                    }
+                }
+            }
+        } else {
+            const names = document.querySelectorAll('.c-name');
+            const rates = document.querySelectorAll('.c-rate');
+            names.forEach((n, idx) => {
+                let r = parseFloat(rates[idx].value) / 100;
+                if (r > 0) {
+                    let disc = currentPrice * r;
+                    breakdown += `• ${n.value || 'Chiết khấu bổ sung'} (${rates[idx].value}%): <strong>-${formatMoney(disc)}</strong><br>`;
+                    currentPrice -= disc;
+                }
+            });
+        }
+
+        if (breakdown === "") breakdown = "<i>Không áp dụng chiết khấu.</i>";
+        currentPrice = Math.round(currentPrice / 1000) * 1000;
+
+        document.getElementById('out-name').innerText = document.getElementById('fullname').value || "Khách lẻ";
+        document.getElementById('out-code').innerText = apt.Ma_can;
+        document.getElementById('out-type').innerText = apt.Type || "N/A";
+        document.getElementById('out-area').innerText = apt.Dien_tich || "0";
+        document.getElementById('out-price-land').innerText = formatMoney(priceLand);
+        document.getElementById('out-price-build').innerText = formatMoney(priceBuild);
+        document.getElementById('out-price-total').innerText = formatMoney(basePrice);
+        document.getElementById('out-price-final').innerText = formatMoney(currentPrice);
+        document.getElementById('discount-breakdown').innerHTML = breakdown;
+
+        renderSchedule(plan, currentPrice, depositDate);
+        document.getElementById('result-box').style.display = 'block';
+        window.scrollTo({ top: document.getElementById('result-box').offsetTop, behavior: 'smooth' });
+    }
+
+    function renderSchedule(plan, finalPrice, depositDateStr) {
+        const container = document.getElementById('schedule-content');
+        container.innerHTML = "";
+        const deposit = 100000000;
+
+        let depositObj = new Date(depositDateStr);
+        let hdmbObj = new Date(depositDateStr);
+        hdmbObj.setDate(hdmbObj.getDate() + 10); 
+        
+        let steps = [];
+        if (plan === '30') {
+            container.innerHTML = `
+                <div class="milestone-container" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                    <div style="background: #ebf8ff; padding: 15px; border-left: 5px solid #3182ce; border-radius: 4px;"><strong>1. Đặt cọc:</strong> ${formatMoney(deposit)} (Ngày ${getFormattedDate(depositObj)})</div>
+                    <div style="background: #ebf8ff; padding: 15px; border-left: 5px solid #3182ce; border-radius: 4px;"><strong>2. Trong 30 ngày kể từ lúc cọc:</strong> ${formatMoney((finalPrice * 0.95) - deposit)} (Ngày ${calculateDate(depositObj, 30)})</div>
+                    <div style="background: #ebf8ff; padding: 15px; border-left: 5px solid #3182ce; border-radius: 4px;"><strong>3. Thông báo nhận GCN:</strong> ${formatMoney(finalPrice * 0.05)}</div>
+                </div>`;
+            return;
+        }
+
+        if (plan === '12') {
+            steps = [
+                {d: "Lần 1_Ký HĐMB (Trong 10 ngày làm việc từ TTĐC)", t: "T", days: 0, p: 0.15},
+                {d: "Lần 2_HĐMB (Trong 60 ngày từ khi ký HĐMB)", t: "T+60", days: 60, p: 0.10},
+                {d: "Lần 3_HĐMB (Trong 120 ngày từ khi ký HĐMB)", t: "T+120", days: 120, p: 0.10},
+                {d: "Lần 4_HĐMB (Trong 180 ngày từ khi ký HĐMB)", t: "T+180", days: 180, p: 0.15},
+                {d: "Lần 5_HĐMB (Trong 240 ngày từ khi ký HĐMB)", t: "T+240", days: 240, p: 0.10},
+                {d: "Lần 6_HĐMB (Trong 300 ngày từ khi ký HĐMB)", t: "T+300", days: 300, p: 0.10},
+                {d: "Lần 7_Thông báo bàn giao (Dự kiến)", t: "T+360", days: 360, p: 0.25},
+                {d: "Lần 8_Thông báo nhận GCN", t: "Theo TB", days: null, p: 0.05}
+            ];
+        } else {
+            steps = [
+                {d: "Lần 1_Ký HĐMB (Trong 10 ngày làm việc từ TTĐC)", t: "T", days: 0, p: 0.15},
+                {d: "Lần 2_HĐMB (Trong 120 ngày từ khi ký HĐMB)", t: "T+120", days: 120, p: 0.10},
+                {d: "Lần 3_HĐMB (Trong 240 ngày từ khi ký HĐMB)", t: "T+240", days: 240, p: 0.10},
+                {d: "Lần 4_HĐMB (Trong 360 ngày từ khi ký HĐMB)", t: "T+360", days: 360, p: 0.15},
+                {d: "Lần 5_HĐMB (Trong 480 ngày từ khi ký HĐMB)", t: "T+480", days: 480, p: 0.05},
+                {d: "Lần 6_HĐMB (Trong 600 ngày từ khi ký HĐMB)", t: "T+600", days: 600, p: 0.05},
+                {d: "Lần 7_HĐMB (Trong 720 ngày từ khi ký HĐMB)", t: "T+720", days: 720, p: 0.05},
+                {d: "Lần 8_HĐMB (Trong 840 ngày từ khi ký HĐMB)", t: "T+840", days: 840, p: 0.05},
+                {d: "Lần 9_Thông báo bàn giao Nhà Ở", t: "T+36 Th", days: 1080, p: 0.25},
+                {d: "Lần 10_Thông báo nhận GCN", t: "Theo TB", days: null, p: 0.05}
+            ];
+        }
+
+        let html = `<table class="schedule-table">
+            <tr><th>Tiến độ</th><th>Thời hạn</th><th>Dự kiến</th><th>Tỷ lệ</th><th>Số tiền</th></tr>
+            <tr style="background:#fff5f5"><td><strong>Đặt cọc</strong></td><td class="td-center">-</td><td class="td-center">${getFormattedDate(depositObj)}</td><td class="td-center">-</td><td class="td-right">${formatMoney(deposit)}</td></tr>`;
+        
+        steps.forEach((s, i) => {
+            let amt = Math.round((finalPrice * s.p) / 1000) * 1000;
+            let note = (i === 0) ? `<br><small>Đã gồm cọc. Chuyển thêm: ${formatMoney(amt - deposit)}</small>` : "";
+            html += `<tr><td>${s.d}</td><td class="td-center">${s.t}</td><td class="td-center">${calculateDate(hdmbObj, s.days)}</td><td class="td-center">${s.p*100}%</td><td class="td-right"><strong>${formatMoney(amt)}</strong>${note}</td></tr>`;
+        });
+        html += `<tr style="background:#edf2f7"><td colspan="3" class="td-right"><strong>Tổng cộng:</strong></td><td class="td-center">100%</td><td class="td-right"><strong style="color:#e53e3e">${formatMoney(finalPrice)}</strong></td></tr></table>`;
+        container.innerHTML = html;
+    }
+
+    function inPhieu() {
+        document.getElementById('print-title-area').style.display = 'block';
+        window.print();
+        setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
+    }
+</script>
+</body>
+</html>
