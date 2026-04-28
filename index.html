@@ -23,9 +23,13 @@
         .mode-selector label { cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
         
         .custom-discount-box { background: #fffaf0; border: 1px dashed #ed8936; padding: 20px; border-radius: 8px; margin-top: 10px; display: none; }
+        .extra-discount-container { background: #ebf8ff; border: 1px dashed #3182ce; padding: 20px; border-radius: 8px; margin-top: 10px; }
+        
         .custom-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .custom-table input { width: 90%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        .btn-add { background: #2b6cb0; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .custom-table th { font-size: 14px; color: #4a5568; padding-bottom: 8px; }
+        .custom-table input, .custom-table select { width: 95%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        
+        .btn-add { background: #2b6cb0; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
         .btn-remove { background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;}
 
         .btn-main { background: #d53f8c; color: white; border: none; padding: 18px 40px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
@@ -104,30 +108,43 @@
             </select>
         </div>
 
-        <div class="form-group full-width" id="auto-extra-discount-box" style="background: #ebf8ff; padding: 15px; border-radius: 6px; border: 1px dashed #3182ce;">
-            <label style="display: flex; align-items: center; gap: 10px; margin: 0; cursor: pointer; color: #2b6cb0; font-size: 16px;">
-                <input type="checkbox" id="enable-extra" onchange="toggleExtraDetails()" style="width: 20px; height: 20px;">
-                <strong>Áp dụng thêm chiết khấu bổ sung (Tính lũy kế sau chiết khấu trước)</strong>
-            </label>
-            
-            <div id="extra-details" style="display: none; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
-                <div class="form-group">
-                    <label>Loại chiết khấu</label>
-                    <select id="extra-type" onchange="handleExtraTypeChange()">
-                        <option value="percent">Tính theo Tỷ lệ (%)</option>
-                        <option value="amount">Tính theo Số tiền (VNĐ)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Mốc áp dụng</label>
-                    <select id="extra-base">
-                        <option value="after-vat">Giá sau CK trước (Gồm VAT)</option>
-                        <option value="before-vat">Giá sau CK trước (Chưa VAT)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Giá trị</label>
-                    <input type="number" id="extra-value" placeholder="Nhập số % hoặc số tiền..." step="0.1">
+        <div class="form-group full-width no-print" id="auto-extra-discount-box">
+            <div class="extra-discount-container">
+                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer; color: #2b6cb0;">
+                    <input type="checkbox" id="enable-extra" onchange="toggleExtraDetails()" style="width: 20px; height: 20px;">
+                    <strong>Áp dụng chiết khấu bổ sung (Tính lũy kế sau PTTT)</strong>
+                </label>
+                
+                <div id="extra-details-area" style="display: none;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Loại</th>
+                                <th>Mốc áp dụng</th>
+                                <th>Giá trị (% hoặc tiền)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="extra-body">
+                            <tr>
+                                <td>
+                                    <select class="ex-type" onchange="handleExTypeChange(this)">
+                                        <option value="percent">Tỷ lệ (%)</option>
+                                        <option value="amount">Số tiền (VNĐ)</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="ex-base">
+                                        <option value="after-vat">Giá sau CK trước (Gồm VAT)</option>
+                                        <option value="before-vat">Giá sau CK trước (Chưa VAT)</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" class="ex-value" placeholder="Nhập giá trị..." step="0.1"></td>
+                                <td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-add" onclick="addExtraRow()">+ Thêm chiết khấu bổ sung</button>
                 </div>
             </div>
         </div>
@@ -145,7 +162,7 @@
                 </tr>
             </tbody>
         </table>
-        <button class="btn-add" onclick="addRow()">+ Thêm dòng chiết khấu</button>
+        <button class="btn-add" onclick="addCustomRow()">+ Thêm dòng chiết khấu</button>
     </div>
 
     <button class="btn-main no-print" onclick="calculate()">TẠO PHIẾU TÍNH GIÁ</button>
@@ -228,13 +245,13 @@
 
     function toggleExtraDetails() {
         const isChecked = document.getElementById('enable-extra').checked;
-        document.getElementById('extra-details').style.display = isChecked ? 'grid' : 'none';
+        document.getElementById('extra-details-area').style.display = isChecked ? 'block' : 'none';
     }
 
-    function handleExtraTypeChange() {
-        const type = document.getElementById('extra-type').value;
-        const baseSelect = document.getElementById('extra-base');
-        if (type === 'amount') {
+    function handleExTypeChange(el) {
+        const row = el.closest('tr');
+        const baseSelect = row.querySelector('.ex-base');
+        if (el.value === 'amount') {
             baseSelect.value = 'after-vat';
             baseSelect.disabled = true;
         } else {
@@ -242,7 +259,27 @@
         }
     }
 
-    function addRow() {
+    function addExtraRow() {
+        const row = `<tr>
+            <td>
+                <select class="ex-type" onchange="handleExTypeChange(this)">
+                    <option value="percent">Tỷ lệ (%)</option>
+                    <option value="amount">Số tiền (VNĐ)</option>
+                </select>
+            </td>
+            <td>
+                <select class="ex-base">
+                    <option value="after-vat">Giá sau CK trước (Gồm VAT)</option>
+                    <option value="before-vat">Giá sau CK trước (Chưa VAT)</option>
+                </select>
+            </td>
+            <td><input type="number" class="ex-value" placeholder="Nhập giá trị..." step="0.1"></td>
+            <td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td>
+        </tr>`;
+        document.getElementById('extra-body').insertAdjacentHTML('beforeend', row);
+    }
+
+    function addCustomRow() {
         const row = `<tr>
             <td><input type="text" class="c-name" placeholder="Lý do chiết khấu..."></td>
             <td><input type="number" class="c-rate" value="0" step="0.1"></td>
@@ -282,49 +319,49 @@
         let currentPrice = originalPrice;
         let breakdown = "";
 
-        // TÍNH TOÁN LŨY KẾ
         if (mode === 'auto') {
-            // Bước 1: Chiết khấu phương thức thanh toán (Tính trên giá gốc)
+            // 1. CK Phương thức thanh toán
             let planRate = 0;
             let planText = "";
             if (plan === '12') { planRate = 0.075; planText = "Thanh toán 12 tháng (7.5%)"; }
             else if (plan === '30') { planRate = 0.12; planText = "Thanh toán nhanh 30 ngày (12%)"; }
 
             if (planRate > 0) {
-                let disc = currentPrice * planRate; // Tính trên currentPrice (lúc này đang là giá gốc)
+                let disc = currentPrice * planRate;
                 breakdown += `• ${planText}: <strong>-${formatMoney(disc)}</strong><br>`;
                 currentPrice -= disc;
             }
 
-            // Bước 2: Chiết khấu bổ sung (Tính lũy kế sau bước 1)
+            // 2. CK Bổ sung (Lũy kế nhiều dòng)
             if (document.getElementById('enable-extra').checked) {
-                let extraVal = parseFloat(document.getElementById('extra-value').value) || 0;
-                if (extraVal > 0) {
-                    let extraType = document.getElementById('extra-type').value;
-                    let extraBase = document.getElementById('extra-base').value;
-                    
-                    if (extraType === 'amount') {
-                        breakdown += `• Chiết khấu bổ sung tiền mặt: <strong>-${formatMoney(extraVal)}</strong><br>`;
-                        currentPrice -= extraVal;
-                    } else { 
-                        // Lấy giá hiện tại (đã trừ CK bước 1) làm mốc
-                        let refPrice = (extraBase === 'before-vat') ? (currentPrice / 1.1) : currentPrice;
-                        let extraDisc = refPrice * (extraVal / 100);
-                        let baseText = (extraBase === 'before-vat') ? "giá hiện tại (trước VAT)" : "giá hiện tại (sau VAT)";
-                        
-                        breakdown += `• Chiết khấu bổ sung ${extraVal}% (Tính trên ${baseText}): <strong>-${formatMoney(extraDisc)}</strong><br>`;
-                        currentPrice -= extraDisc;
+                const rows = document.querySelectorAll('#extra-body tr');
+                rows.forEach((row, index) => {
+                    const type = row.querySelector('.ex-type').value;
+                    const base = row.querySelector('.ex-base').value;
+                    const val = parseFloat(row.querySelector('.ex-value').value) || 0;
+
+                    if (val > 0) {
+                        if (type === 'amount') {
+                            breakdown += `• CK bổ sung tiền mặt #${index + 1}: <strong>-${formatMoney(val)}</strong><br>`;
+                            currentPrice -= val;
+                        } else {
+                            let refPrice = (base === 'before-vat') ? (currentPrice / 1.1) : currentPrice;
+                            let extraDisc = refPrice * (val / 100);
+                            let baseText = (base === 'before-vat') ? "giá hiện tại (trước VAT)" : "giá hiện tại (sau VAT)";
+                            breakdown += `• CK bổ sung #${index + 1} (${val}% trên ${baseText}): <strong>-${formatMoney(extraDisc)}</strong><br>`;
+                            currentPrice -= extraDisc;
+                        }
                     }
-                }
+                });
             }
         } else {
-            // Chế độ tùy chỉnh: Tự động tính lũy kế từng dòng từ trên xuống dưới
+            // Chế độ tùy chỉnh
             const names = document.querySelectorAll('.c-name');
             const rates = document.querySelectorAll('.c-rate');
             names.forEach((n, idx) => {
                 let r = parseFloat(rates[idx].value) / 100;
                 if (r > 0) {
-                    let disc = currentPrice * r; // LUÔN TÍNH TRÊN GIÁ ĐÃ CHIẾT KHẤU CỦA DÒNG TRƯỚC
+                    let disc = currentPrice * r;
                     breakdown += `• ${n.value || 'Chiết khấu bổ sung'} (${rates[idx].value}%): <strong>-${formatMoney(disc)}</strong><br>`;
                     currentPrice -= disc;
                 }
@@ -332,7 +369,6 @@
         }
 
         if (breakdown === "") breakdown = "<i>Không có chiết khấu áp dụng</i>";
-        // Làm tròn đến hàng nghìn
         currentPrice = Math.round(currentPrice / 1000) * 1000;
 
         document.getElementById('out-name').innerText = document.getElementById('fullname').value || "Khách hàng";
