@@ -390,6 +390,11 @@
         window.print();
         setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
     }
+    function toggleExtraType() {
+        const type = document.getElementById('extra-type').value;
+        // Nếu chọn trừ thẳng theo số tiền thì vô hiệu hóa lựa chọn Trước/Sau VAT
+        document.getElementById('extra-vat').disabled = (type === 'amount');
+    }
 </script>
 </body>
 </html>
