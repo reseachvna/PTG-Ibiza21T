@@ -449,258 +449,193 @@
         html += `<tr style="background:#edf2f7"><td colspan="3" class="td-right"><strong>Tổng cộng:</strong></td><td class="td-center">100%</td><td class="td-right"><strong style="color:#e53e3e">${formatMoney(finalPrice)}</strong></td></tr></table>`;
         container.innerHTML = html;
     }
-
     function inPhieu() {
         document.getElementById('print-title-area').style.display = 'block';
         window.print();
         setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
     }
-</script>
-    <button class="btn-income-trigger no-print" onclick="toggleIncomeModul()">TÍNH DOANH THU BÁN PHÒNG</button>
-
-<div id="income-modul" class="income-container no-print" style="display: none;">
-    <h2 class="modul-title">DÒNG THU TỪ KINH DOANH CHO THUÊ</h2>
-    <p style="text-align: center; font-style: italic; color: #666; margin-top: -20px;">(Tạm tính trong thời gian 24 tháng kể từ ngày nhận bàn giao QSD)</p>
-
-    <div class="income-input-grid">
-        <div class="input-item">
-            <label>Giá bán phòng (VNĐ):</label>
-            <input type="number" id="room-price" value="2000000" oninput="calculateRental()">
-        </div>
-        <div class="input-item">
-            <label>OCC Mùa thấp điểm (Th11 - Th2):</label>
-            <input type="number" id="occ-low" value="40" oninput="calculateRental()">
-        </div>
-        <div class="input-item">
-            <label>OCC Mùa cao điểm (Th3 - Th10):</label>
-            <input type="number" id="occ-high" value="80" oninput="calculateRental()">
-        </div>
-        <div class="input-item">
-            <label>Số đêm nghỉ TB/Tháng:</label>
-            <input type="number" id="nights-per-month" value="30" oninput="calculateRental()">
-        </div>
+    //Modul tính doanh thu
+<div class="income-wrapper no-print">
+    <div style="text-align: center; margin: 30px 0;">
+        <button class="btn-calculate-income" onclick="toggleIncomeModul()">
+            <span class="icon">📊</span> TÍNH TOÁN DOANH THU BÁN PHÒNG & ROI
+        </button>
     </div>
 
-    <table class="rental-table">
-        <thead>
-            <tr>
-                <th>Thời gian</th>
-                <th>Số đêm phòng (OCC)</th>
-                <th>Doanh thu bán phòng</th>
-                <th>Cách tính</th>
-            </tr>
-        </thead>
-        <tbody id="rental-body">
-            </tbody>
-        <tfoot>
-            <tr class="total-row">
-                <td colspan="2">Tổng doanh thu bán phòng 24 tháng:</td>
-                <td id="total-revenue">0</td>
-                <td>Kể từ ngày nhận bàn giao QSD</td>
-            </tr>
-        </tfoot>
-    </table>
+    <div id="income-modul" class="income-container" style="display: none;">
+        <div class="income-header">
+            <h3>DÒNG THU TỪ KINH DOANH CHO THUÊ</h3>
+            <p>(Tạm tính trong 24 tháng kể từ ngày nhận bàn giao QSD)</p>
+        </div>
 
-    <div class="investment-summary">
-        <h3>ƯU ĐÃI KHI ĐẦU TƯ SẢN PHẨM TẠI IBIZA PARTY RESORT</h3>
-        <div class="summary-item">
-            <span>Giá niêm yết Căn hộ (gồm VAT):</span>
-            <strong id="summary-list-price">0</strong>
-        </div>
-        <div class="summary-item">
-            <span>Tổng các khoản chiết khấu:</span>
-            <strong id="summary-total-discount">0</strong>
-        </div>
-        <div class="summary-item highlight">
-            <span>Doanh thu bán phòng (24 tháng):</span>
-            <strong id="summary-rental-income">0</strong>
-        </div>
-        <div class="summary-item total">
-            <span>Tổng giá trị nhận được trong 24 tháng:</span>
-            <strong id="summary-total-benefit">0</strong>
-        </div>
-        <div class="roi-box">
-            <span>TỶ LỆ THU HỒI VỐN ĐẦU TƯ SAU 24 THÁNG:</span>
-            <strong id="roi-percentage">0%</strong>
+        <div class="income-content-layout">
+            <div class="income-table-area">
+                <table class="rental-table-v2">
+                    <thead>
+                        <tr>
+                            <th>Giai đoạn thời gian</th>
+                            <th>Số đêm phòng (OCC)</th>
+                            <th>Doanh thu dự kiến</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rental-body">
+                        </tbody>
+                    <tfoot>
+                        <tr class="total-revenue-row">
+                            <td colspan="2">TỔNG DOANH THU BÁN PHÒNG (24 THÁNG)</td>
+                            <td id="total-revenue">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="investment-summary-v2">
+                    <div class="summary-title">ƯU ĐÃI ĐẦU TƯ TỔNG THỂ</div>
+                    <div class="summary-grid">
+                        <div class="summary-item-v2">
+                            <span>Giá niêm yết (VAT):</span>
+                            <strong id="summary-list-price">0</strong>
+                        </div>
+                        <div class="summary-item-v2">
+                            <span>Tổng chiết khấu:</span>
+                            <strong id="summary-total-discount">0</strong>
+                        </div>
+                        <div class="summary-item-v2 highlight-blue">
+                            <span>Doanh thu phòng:</span>
+                            <strong id="summary-rental-income">0</strong>
+                        </div>
+                        <div class="summary-item-v2 total-benefit">
+                            <span>Tổng giá trị nhận được:</span>
+                            <strong id="summary-total-benefit">0</strong>
+                        </div>
+                    </div>
+                    <div class="roi-final-card">
+                        <span class="roi-label">TỶ LỆ THU HỒI VỐN ĐẦU TƯ / GIÁ NIÊM YẾT</span>
+                        <span class="roi-value" id="roi-percentage">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="income-sidebar">
+                <div class="sidebar-title">THÔNG SỐ GIẢ ĐỊNH</div>
+                
+                <div class="input-group-v2">
+                    <label>Giá bán phòng/đêm</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="room-price" value="2000000" oninput="calculateRental()">
+                        <span>VNĐ</span>
+                    </div>
+                </div>
+
+                <div class="input-group-v2">
+                    <label>OCC Thấp điểm (T11-T2)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="occ-low" value="40" oninput="calculateRental()">
+                        <span>%</span>
+                    </div>
+                </div>
+
+                <div class="input-group-v2">
+                    <label>OCC Cao điểm (T3-T10)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="occ-high" value="80" oninput="calculateRental()">
+                        <span>%</span>
+                    </div>
+                </div>
+
+                <div class="input-group-v2">
+                    <label>Số đêm vận hành/tháng</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="nights-per-month" value="30" oninput="calculateRental()">
+                        <span>Đêm</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-note">
+                    * Các thông số có thể thay đổi tùy theo tình hình vận hành thực tế.
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    .income-container { margin-top: 30px; background: #fff; padding: 30px; border: 2px solid #2b6cb0; border-radius: 12px; }
-    .modul-title { color: #2b6cb0 !important; border-bottom: 2px solid #2b6cb0; padding-bottom: 10px; }
-    .btn-income-trigger { background: #2b6cb0; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
-    
-    .income-input-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; background: #f0f7ff; padding: 20px; border-radius: 8px; }
-    .input-item label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #2b6cb0; }
-    .input-item input { width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; }
+    /* Nút bấm thẩm mỹ */
+    .btn-calculate-income {
+        background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+        color: white; border: none; padding: 16px 40px; border-radius: 50px;
+        font-size: 18px; font-weight: bold; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.3);
+        transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-calculate-income:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(43, 108, 176, 0.4); }
 
-    .rental-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-    .rental-table th { background: #2b6cb0; color: white; padding: 12px; border: 1px solid #fff; }
-    .rental-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
-    .total-row { background: #fffaf0; font-weight: bold; color: #c05621; }
+    /* Layout Container */
+    .income-container { 
+        background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; 
+        overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 50px;
+    }
+    .income-header { background: #f8fafc; padding: 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+    .income-header h3 { margin: 0; color: #1a365d; font-size: 20px; }
+    .income-header p { margin: 5px 0 0; color: #64748b; font-size: 14px; font-style: italic; }
 
-    .investment-summary { margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; }
-    .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; }
-    .summary-item.total { border-top: 2px solid #2b6cb0; margin-top: 10px; padding-top: 15px; font-size: 1.1em; color: #2b6cb0; }
-    .roi-box { background: #fff5f5; border: 2px solid #e53e3e; padding: 20px; text-align: center; margin-top: 20px; border-radius: 8px; }
-    .roi-box strong { color: #e53e3e; font-size: 24px; display: block; }
+    .income-content-layout { display: flex; gap: 0; }
+
+    /* Bảng tính bên trái */
+    .income-table-area { flex: 1; padding: 25px; border-right: 1px solid #e2e8f0; }
+    .rental-table-v2 { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+    .rental-table-v2 th { background: #f1f5f9; color: #475569; padding: 12px; text-align: left; font-size: 13px; border-bottom: 2px solid #e2e8f0; }
+    .rental-table-v2 td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 14px; }
+    .total-revenue-row { background: #f8fafc; font-weight: bold; }
+    .total-revenue-row td { color: #2b6cb0; font-size: 16px; border-top: 2px solid #e2e8f0; }
+
+    /* Tóm tắt ưu đãi */
+    .investment-summary-v2 { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+    .summary-title { font-weight: bold; color: #1a365d; margin-bottom: 15px; font-size: 15px; border-left: 4px solid #d53f8c; padding-left: 10px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .summary-item-v2 { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 14px; }
+    .summary-item-v2 strong { color: #334155; }
+    .highlight-blue strong { color: #2b6cb0; }
+    .total-benefit { grid-column: span 2; border-top: 1px solid #e2e8f0; margin-top: 5px; padding-top: 12px; font-weight: bold; }
+    .total-benefit strong { color: #d53f8c; font-size: 18px; }
+
+    .roi-final-card { 
+        margin-top: 20px; background: #fff5f5; border: 1px solid #feb2b2; 
+        padding: 15px; border-radius: 8px; text-align: center;
+    }
+    .roi-label { display: block; font-size: 13px; color: #c53030; font-weight: bold; margin-bottom: 5px; }
+    .roi-value { display: block; font-size: 32px; color: #e53e3e; font-weight: 900; }
+
+    /* Sidebar bên phải */
+    .income-sidebar { width: 280px; background: #f8fafc; padding: 25px; }
+    .sidebar-title { font-weight: bold; color: #475569; margin-bottom: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .input-group-v2 { margin-bottom: 18px; }
+    .input-group-v2 label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+    .input-with-unit { position: relative; display: flex; align-items: center; }
+    .input-with-unit input { 
+        width: 100%; padding: 10px 45px 10px 12px; border: 1px solid #cbd5e0; 
+        border-radius: 6px; font-weight: bold; color: #1e293b; outline: none;
+    }
+    .input-with-unit input:focus { border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1); }
+    .input-with-unit span { position: absolute; right: 12px; font-size: 11px; color: #94a3b8; font-weight: bold; }
+    .sidebar-note { margin-top: 30px; font-size: 11px; color: #94a3b8; line-height: 1.4; }
+
+    @media (max-width: 850px) {
+        .income-content-layout { flex-direction: column; }
+        .income-sidebar { width: 100%; border-top: 1px solid #e2e8f0; }
+    }
 </style>
 
 <script>
     function toggleIncomeModul() {
         const modul = document.getElementById('income-modul');
-        modul.style.display = modul.style.display === 'none' ? 'block' : 'none';
-        calculateRental();
-    }
-
-    function calculateRental() {
-        const roomPrice = parseFloat(document.getElementById('room-price').value) || 0;
-        const occLow = (parseFloat(document.getElementById('occ-low').value) || 0) / 100;
-        const occHigh = (parseFloat(document.getElementById('occ-high').value) || 0) / 100;
-        const nights = parseFloat(document.getElementById('nights-per-month').value) || 0;
-
-        // Cấu trúc thời gian theo hình ảnh gợi ý
-        const timeline = [
-            { label: "Tháng 11/2026 - Tháng 02/2027", months: 4, occ: occLow, note: "Mùa thấp điểm" },
-            { label: "Tháng 03/2027 - Tháng 10/2027", months: 8, occ: occHigh, note: "Mùa cao điểm" },
-            { label: "Tháng 11/2027 - Tháng 02/2028", months: 4, occ: occLow, note: "Mùa thấp điểm" },
-            { label: "Tháng 03/2028 - Tháng 10/2028", months: 8, occ: occHigh, note: "Mùa cao điểm" }
-        ];
-
-        let totalRevenue = 0;
-        let html = "";
-
-        timeline.forEach(item => {
-            let nightsTotal = Math.round(item.occ * nights * item.months);
-            let revenue = nightsTotal * roomPrice;
-            totalRevenue += revenue;
-
-            html += `<tr>
-                <td>${item.label}</td>
-                <td>${nightsTotal} đêm</td>
-                <td>${formatMoney(revenue)}</td>
-                <td style="font-size: 12px;">Số đêm = ${item.occ*100}% * ${nights}đêm * ${item.months}tháng</td>
-            </tr>`;
-        });
-
-        document.getElementById('rental-body').innerHTML = html;
-        document.getElementById('total-revenue').innerText = formatMoney(totalRevenue);
-
-        // Liên kết dữ liệu đầu tư
-        const listPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText) || 0;
-        const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText) || 0;
-        const totalDiscount = listPrice - finalPrice;
-
-        document.getElementById('summary-list-price').innerText = formatMoney(listPrice);
-        document.getElementById('summary-total-discount').innerText = formatMoney(totalDiscount);
-        document.getElementById('summary-rental-income').innerText = formatMoney(totalRevenue);
-        
-        const totalBenefit = totalDiscount + totalRevenue;
-        document.getElementById('summary-total-benefit').innerText = formatMoney(totalBenefit);
-
-        if (listPrice > 0) {
-            const roi = (totalBenefit / listPrice) * 100;
-            document.getElementById('roi-percentage').innerText = roi.toFixed(2) + "%";
+        if(modul.style.display === 'none') {
+            modul.style.display = 'block';
+            calculateRental();
+            window.scrollTo({ top: modul.offsetTop - 50, behavior: 'smooth' });
+        } else {
+            modul.style.display = 'none';
         }
     }
-</script><button class="btn-income-trigger no-print" onclick="toggleIncomeModul()">TÍNH DOANH THU BÁN PHÒNG</button>
-
-<div id="income-modul" class="income-container no-print" style="display: none;">
-    <h2 class="modul-title">DÒNG THU TỪ KINH DOANH CHO THUÊ</h2>
-    <p style="text-align: center; font-style: italic; color: #666; margin-top: -20px;">(Tạm tính trong thời gian 24 tháng kể từ ngày nhận bàn giao QSD)</p>
-
-    <div class="income-input-grid">
-        <div class="input-item">
-            <label>Giá bán phòng (VNĐ):</label>
-            <input type="number" id="room-price" value="2000000" oninput="calculateRental()">
-        </div>
-        <div class="input-item">
-            <label>OCC Mùa thấp điểm (Th11 - Th2):</label>
-            <input type="number" id="occ-low" value="40" oninput="calculateRental()">
-        </div>
-        <div class="input-item">
-            <label>OCC Mùa cao điểm (Th3 - Th10):</label>
-            <input type="number" id="occ-high" value="80" oninput="calculateRental()">
-        </div>
-        <div class="input-item">
-            <label>Số đêm nghỉ TB/Tháng:</label>
-            <input type="number" id="nights-per-month" value="30" oninput="calculateRental()">
-        </div>
-    </div>
-
-    <table class="rental-table">
-        <thead>
-            <tr>
-                <th>Thời gian</th>
-                <th>Số đêm phòng (OCC)</th>
-                <th>Doanh thu bán phòng</th>
-                <th>Cách tính</th>
-            </tr>
-        </thead>
-        <tbody id="rental-body">
-            </tbody>
-        <tfoot>
-            <tr class="total-row">
-                <td colspan="2">Tổng doanh thu bán phòng 24 tháng:</td>
-                <td id="total-revenue">0</td>
-                <td>Kể từ ngày nhận bàn giao QSD</td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <div class="investment-summary">
-        <h3>ƯU ĐÃI KHI ĐẦU TƯ SẢN PHẨM TẠI IBIZA PARTY RESORT</h3>
-        <div class="summary-item">
-            <span>Giá niêm yết Căn hộ (gồm VAT):</span>
-            <strong id="summary-list-price">0</strong>
-        </div>
-        <div class="summary-item">
-            <span>Tổng các khoản chiết khấu:</span>
-            <strong id="summary-total-discount">0</strong>
-        </div>
-        <div class="summary-item highlight">
-            <span>Doanh thu bán phòng (24 tháng):</span>
-            <strong id="summary-rental-income">0</strong>
-        </div>
-        <div class="summary-item total">
-            <span>Tổng giá trị nhận được trong 24 tháng:</span>
-            <strong id="summary-total-benefit">0</strong>
-        </div>
-        <div class="roi-box">
-            <span>TỶ LỆ THU HỒI VỐN ĐẦU TƯ SAU 24 THÁNG:</span>
-            <strong id="roi-percentage">0%</strong>
-        </div>
-    </div>
-</div>
-
-<style>
-    .income-container { margin-top: 30px; background: #fff; padding: 30px; border: 2px solid #2b6cb0; border-radius: 12px; }
-    .modul-title { color: #2b6cb0 !important; border-bottom: 2px solid #2b6cb0; padding-bottom: 10px; }
-    .btn-income-trigger { background: #2b6cb0; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
-    
-    .income-input-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; background: #f0f7ff; padding: 20px; border-radius: 8px; }
-    .input-item label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #2b6cb0; }
-    .input-item input { width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; }
-
-    .rental-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-    .rental-table th { background: #2b6cb0; color: white; padding: 12px; border: 1px solid #fff; }
-    .rental-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
-    .total-row { background: #fffaf0; font-weight: bold; color: #c05621; }
-
-    .investment-summary { margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; }
-    .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; }
-    .summary-item.total { border-top: 2px solid #2b6cb0; margin-top: 10px; padding-top: 15px; font-size: 1.1em; color: #2b6cb0; }
-    .roi-box { background: #fff5f5; border: 2px solid #e53e3e; padding: 20px; text-align: center; margin-top: 20px; border-radius: 8px; }
-    .roi-box strong { color: #e53e3e; font-size: 24px; display: block; }
-</style>
-
-<script>
-    function toggleIncomeModul() {
-        const modul = document.getElementById('income-modul');
-        modul.style.display = modul.style.display === 'none' ? 'block' : 'none';
-        calculateRental();
-    }
 
     function calculateRental() {
         const roomPrice = parseFloat(document.getElementById('room-price').value) || 0;
@@ -708,36 +643,37 @@
         const occHigh = (parseFloat(document.getElementById('occ-high').value) || 0) / 100;
         const nights = parseFloat(document.getElementById('nights-per-month').value) || 0;
 
-        // Cấu trúc thời gian theo hình ảnh gợi ý
         const timeline = [
-            { label: "Tháng 11/2026 - Tháng 02/2027", months: 4, occ: occLow, note: "Mùa thấp điểm" },
-            { label: "Tháng 03/2027 - Tháng 10/2027", months: 8, occ: occHigh, note: "Mùa cao điểm" },
-            { label: "Tháng 11/2027 - Tháng 02/2028", months: 4, occ: occLow, note: "Mùa thấp điểm" },
-            { label: "Tháng 03/2028 - Tháng 10/2028", months: 8, occ: occHigh, note: "Mùa cao điểm" }
+            { label: "Tháng 11/2026 - Tháng 02/2027", months: 4, occ: occLow, type: "Thấp điểm" },
+            { label: "Tháng 03/2027 - Tháng 10/2027", months: 8, occ: occHigh, type: "Cao điểm" },
+            { label: "Tháng 11/2027 - Tháng 02/2028", months: 4, occ: occLow, type: "Thấp điểm" },
+            { label: "Tháng 03/2028 - Tháng 10/2028", months: 8, occ: occHigh, type: "Cao điểm" }
         ];
 
         let totalRevenue = 0;
         let html = "";
 
         timeline.forEach(item => {
-            let nightsTotal = Math.round(item.occ * nights * item.months);
-            let revenue = nightsTotal * roomPrice;
+            let nightsInPeriod = Math.round(item.occ * nights * item.months);
+            let revenue = nightsInPeriod * roomPrice;
             totalRevenue += revenue;
 
             html += `<tr>
-                <td>${item.label}</td>
-                <td>${nightsTotal} đêm</td>
-                <td>${formatMoney(revenue)}</td>
-                <td style="font-size: 12px;">Số đêm = ${item.occ*100}% * ${nights}đêm * ${item.months}tháng</td>
+                <td>${item.label} <br><small style="color:#64748b">${item.type} (${item.occ*100}%)</small></td>
+                <td><strong>${nightsInPeriod}</strong> đêm</td>
+                <td><strong>${formatMoney(revenue)}</strong></td>
             </tr>`;
         });
 
         document.getElementById('rental-body').innerHTML = html;
         document.getElementById('total-revenue').innerText = formatMoney(totalRevenue);
 
-        // Liên kết dữ liệu đầu tư
-        const listPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText) || 0;
-        const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText) || 0;
+        // Lấy dữ liệu từ bảng tính giá phía trên
+        const listPriceStr = document.getElementById('out-price-total').innerText;
+        const finalPriceStr = document.getElementById('out-price-final').innerText;
+        
+        const listPrice = cleanAndParsePrice(listPriceStr) || 0;
+        const finalPrice = cleanAndParsePrice(finalPriceStr) || 0;
         const totalDiscount = listPrice - finalPrice;
 
         document.getElementById('summary-list-price').innerText = formatMoney(listPrice);
