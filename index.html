@@ -121,8 +121,8 @@
                 <div class="form-group">
                     <label>Mốc áp dụng</label>
                     <select id="extra-base">
-                        <option value="after-vat">Giá Sau VAT</option>
-                        <option value="before-vat">Giá Trước VAT</option>
+                        <option value="after-vat">Giá sau CK trước (Gồm VAT)</option>
+                        <option value="before-vat">Giá sau CK trước (Chưa VAT)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -174,7 +174,7 @@
         </div>
 
         <div class="price-highlight">
-            <div style="margin-bottom: 5px; font-weight: bold; color: #2d3748;">Chi tiết chiết khấu áp dụng:</div>
+            <div style="margin-bottom: 5px; font-weight: bold; color: #2d3748;">Chi tiết chiết khấu áp dụng (Tính lũy kế):</div>
             <div id="discount-breakdown" class="discount-detail"></div>
             
             <div class="final-price-container">
@@ -282,7 +282,7 @@
         let currentPrice = originalPrice;
         let breakdown = "";
 
-        // TÍNH TOÁN LŨY KẾ TỪNG BƯỚC
+        // TÍNH TOÁN LŨY KẾ
         if (mode === 'auto') {
             // Bước 1: Chiết khấu phương thức thanh toán (Tính trên giá gốc)
             let planRate = 0;
@@ -291,12 +291,12 @@
             else if (plan === '30') { planRate = 0.12; planText = "Thanh toán nhanh 30 ngày (12%)"; }
 
             if (planRate > 0) {
-                let disc = originalPrice * planRate;
+                let disc = currentPrice * planRate; // Tính trên currentPrice (lúc này đang là giá gốc)
                 breakdown += `• ${planText}: <strong>-${formatMoney(disc)}</strong><br>`;
                 currentPrice -= disc;
             }
 
-            // Bước 2: Chiết khấu bổ sung (Tính trên giá sau khi đã trừ chiết khấu thanh toán)
+            // Bước 2: Chiết khấu bổ sung (Tính lũy kế sau bước 1)
             if (document.getElementById('enable-extra').checked) {
                 let extraVal = parseFloat(document.getElementById('extra-value').value) || 0;
                 if (extraVal > 0) {
@@ -307,10 +307,10 @@
                         breakdown += `• Chiết khấu bổ sung tiền mặt: <strong>-${formatMoney(extraVal)}</strong><br>`;
                         currentPrice -= extraVal;
                     } else { 
-                        // CHIẾT KHẤU TỪNG BƯỚC: Lấy giá hiện tại (currentPrice) làm mốc tính %
+                        // Lấy giá hiện tại (đã trừ CK bước 1) làm mốc
                         let refPrice = (extraBase === 'before-vat') ? (currentPrice / 1.1) : currentPrice;
                         let extraDisc = refPrice * (extraVal / 100);
-                        let baseText = (extraBase === 'before-vat') ? "giá sau CK trước (trước VAT)" : "giá sau CK trước (sau VAT)";
+                        let baseText = (extraBase === 'before-vat') ? "giá hiện tại (trước VAT)" : "giá hiện tại (sau VAT)";
                         
                         breakdown += `• Chiết khấu bổ sung ${extraVal}% (Tính trên ${baseText}): <strong>-${formatMoney(extraDisc)}</strong><br>`;
                         currentPrice -= extraDisc;
@@ -324,7 +324,7 @@
             names.forEach((n, idx) => {
                 let r = parseFloat(rates[idx].value) / 100;
                 if (r > 0) {
-                    let disc = currentPrice * r; // Tính trên giá đã giảm của dòng trước đó
+                    let disc = currentPrice * r; // LUÔN TÍNH TRÊN GIÁ ĐÃ CHIẾT KHẤU CỦA DÒNG TRƯỚC
                     breakdown += `• ${n.value || 'Chiết khấu bổ sung'} (${rates[idx].value}%): <strong>-${formatMoney(disc)}</strong><br>`;
                     currentPrice -= disc;
                 }
@@ -332,6 +332,7 @@
         }
 
         if (breakdown === "") breakdown = "<i>Không có chiết khấu áp dụng</i>";
+        // Làm tròn đến hàng nghìn
         currentPrice = Math.round(currentPrice / 1000) * 1000;
 
         document.getElementById('out-name').innerText = document.getElementById('fullname').value || "Khách hàng";
@@ -402,7 +403,6 @@
             let amt = Math.round((finalPrice * s.p) / 1000) * 1000;
             let note = (i === 0) ? `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(amt - deposit)})</small>` : "";
             
-            // Note bàn giao khi lũy kế đạt 50%
             let handoverNote = "";
             if (cumulativePercent >= 50 && (cumulativePercent - (s.p * 100)) < 50) {
                 handoverNote = `<span class="handover-note">Nhận bàn giao quyền sử dụng căn hộ</span>`;
