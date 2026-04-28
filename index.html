@@ -98,7 +98,7 @@
         <div class="form-group full-width">
             <label>Phương thức thanh toán</label>
             <select id="payment-plan">
-                <option value="36">Tiến độ chuẩn 36 tháng (Tiến độ chuẩn)</option>
+                <option value="36">Tiến độ chuẩn 36 tháng</option>
                 <option value="12">Thanh toán trong 12 tháng (Chiết khấu 7.5%)</option>
                 <option value="30">Thanh toán nhanh trong 30 ngày (Chiết khấu 12%)</option>
             </select>
@@ -107,15 +107,19 @@
         <div class="form-group full-width" id="auto-extra-discount-box" style="background: #ebf8ff; padding: 15px; border-radius: 6px; border: 1px dashed #3182ce;">
             <label style="display: flex; align-items: center; gap: 10px; margin: 0; cursor: pointer; color: #2b6cb0; font-size: 16px;">
                 <input type="checkbox" id="enable-extra" onchange="toggleExtraDetails()" style="width: 20px; height: 20px;">
-                <strong>Áp dụng thêm chiết khấu khác (Khuyến mãi, Voucher...)</strong>
+                <strong>Áp dụng thêm chiết khấu bổ sung (Tính trên Tổng giá bán)</strong>
             </label>
             
             <div id="extra-details" style="display: none; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
-                <select id="extra-type">
+                <select id="extra-type" onchange="toggleExtraType()">
                     <option value="percent">Tính theo Tỷ lệ (%)</option>
                     <option value="amount">Tính theo Số tiền (VNĐ)</option>
                 </select>
-                <input type="number" id="extra-value" class="full-width" placeholder="Nhập số % hoặc số tiền..." step="0.1">
+                <select id="extra-vat">
+                    <option value="after-vat">Tính trên mốc giá SAU VAT</option>
+                    <option value="before-vat">Tính trên mốc giá TRƯỚC VAT</option>
+                </select>
+                <input type="number" id="extra-value" placeholder="Nhập số % hoặc số tiền..." step="0.1">
             </div>
         </div>
     </div>
