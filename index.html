@@ -35,6 +35,10 @@
         .btn-main { background: #d53f8c; color: white; border: none; padding: 18px 40px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
         .btn-main:hover { background: #b83280; transform: translateY(-2px); }
 
+        /* Style cho nút chuyển trang mới */
+        .btn-nav { background: #4a5568; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-top: 20px;}
+        .btn-nav:hover { background: #2d3748; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
         .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         
         #result-box { display: none; margin-top: 40px; padding-top: 30px; border-top: 2px solid #edf2f7; text-align: left; }
@@ -166,6 +170,12 @@
     </div>
 
     <button class="btn-main no-print" onclick="calculate()">TẠO PHIẾU TÍNH GIÁ</button>
+
+    <div style="text-align: center;" class="no-print">
+        <a href="index2.html" class="btn-nav">
+            <span>🔄</span> CHUYỂN SANG CÔNG CỤ 2
+        </a>
+    </div>
 
     <div id="result-box">
         <div style="text-align: center; display: none; margin-bottom: 30px;" id="print-title-area">
