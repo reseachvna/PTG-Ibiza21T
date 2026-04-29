@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng tính dòng tiền dự kiến và Hiệu quả đầu tư</title>
+    <title>Phiếu Tính Dòng Tiền & ROI</title>
     <style>
-        /* Tinh chỉnh UI gọn gàng hơn */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; line-height: 1.4; margin: 0; padding: 20px;}
         .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h1 { color: #1a365d; text-align: center; margin: 0 0 5px 0; font-size: 22px; text-transform: uppercase; }
@@ -23,6 +22,7 @@
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-weight: bold; font-size: 12px; margin-bottom: 4px; color: #4a5568; }
         .form-group input { padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 14px; outline: none; font-weight: bold; color: #2d3748;}
+        .input-readonly { background-color: #edf2f7; color: #718096 !important; border: 1px dashed #cbd5e0 !important; cursor: not-allowed; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;}
         th, td { border: 1px solid #cbd5e0; padding: 8px 10px; text-align: center; }
@@ -35,22 +35,18 @@
         .btn-calc { background: #d53f8c; color: white; border: none; padding: 10px 30px; font-size: 15px; font-weight: bold; border-radius: 30px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
         #result-area { display: none; } 
         
-        /* CĂN CHỈNH BẢN QUYỀN TRANG */
         .copyright-footer { text-align: right; margin-top: 20px; border-top: 1px dashed #cbd5e0; padding-top: 10px; font-size: 12px; color: #a0aec0; font-style: italic; }
         .copyright-footer strong { color: #4a5568; font-weight: bold; font-style: normal;}
 
-        /* TỐI ƯU GIAO DIỆN KHI IN / XUẤT PDF */
         @media print { 
             .no-print { display: none !important; } 
             body { background: #fff; padding: 0; }
             .container { box-shadow: none; padding: 0; border: none; max-width: 100%; } 
             .top-panels { gap: 15px; margin-bottom: 15px; }
             .data-panel { padding: 10px; border: 1px solid #ccc; background-color: #fff !important;}
-            /* Chuyển ô nhập liệu thành text thường khi in */
             .form-group input { border: none !important; padding: 0; background: transparent; color: #000;}
             table { margin-bottom: 15px; }
             th, td { padding: 6px 8px; color: #000; border-color: #999;}
-            /* Làm đậm bản quyền khi in */
             .copyright-footer { color: #666; border-top: 1px solid #999; }
         }
     </style>
@@ -63,24 +59,24 @@
     </div>
 
     <h1>Dòng thu từ kinh doanh cho thuê</h1>
-    <h2>(Dự kiến 24 tháng đầu tiên kể từ khi nhận QSD)</h2>
+    <h2>(Dự kiến 24 tháng đầu tiên kể từ khi thanh toán đủ 50%)</h2>
 
     <div class="top-panels">
         <div class="data-panel" style="background-color: #f7fafc;">
-            <h3>🔗 Dữ liệu liên kết (Từ Phiếu tính giá)</h3>
+            <h3>🔗 Dữ liệu liên kết (Đồng bộ từ PTTT)</h3>
             <div class="grid-2">
-                <div class="form-group"><label>Giá niêm yết (VNĐ)</label><input type="text" id="in-gia-niem-yet" readonly></div>
-                <div class="form-group"><label>Tổng chiết khấu (VNĐ)</label><input type="text" id="in-tong-ck" readonly></div>
-                <div class="form-group"><label>Tháng nhận Bàn giao</label><input type="number" id="in-thang-bg"></div>
-                <div class="form-group"><label>Năm nhận Bàn giao</label><input type="number" id="in-nam-bg"></div>
+                <div class="form-group"><label>Giá niêm yết (VNĐ)</label><input type="text" id="in-gia-niem-yet" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Tổng chiết khấu (VNĐ)</label><input type="text" id="in-tong-ck" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Tháng đạt 50% (QSD)</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Năm đạt 50% (QSD)</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Số tháng chờ nhận GCN <span style="font-weight:normal">(Giai đoạn chờ sổ in chi tiết từng tháng)</span></label>
-                    <input type="number" id="in-thang-gcn" value="6">
+                    <label>Số tháng chờ nhận GCN <span style="font-weight:normal; color:#d53f8c;">(Khóa tự động theo PTTT)</span></label>
+                    <input type="number" id="in-thang-gcn" class="input-readonly" readonly title="Dữ liệu này được trích xuất từ Phương thức thanh toán bạn đã chọn.">
                 </div>
             </div>
         </div>
         <div class="data-panel">
-            <h3>📊 Thông số kinh doanh cho thuê</h3>
+            <h3>📊 Thông số giả định (Nhập tay)</h3>
             <div class="grid-2">
                 <div class="form-group"><label>Giá phòng/đêm (VNĐ)</label><input type="number" id="in-gia-phong" value="2000000"></div>
                 <div class="form-group"><label>Số đêm TB/tháng</label><input type="number" id="in-ngay-tb" value="30"></div>
@@ -90,7 +86,7 @@
         </div>
     </div>
 
-    <button class="btn-calc no-print" onclick="showResults()">TÍNH DÒNG THU BÁN PHÒNG</button>
+    <button class="btn-calc no-print" onclick="showResults()">TÍNH DÒNG THU BÁN PHÒNG & ROI</button>
 
     <div id="result-area">
         <table id="table-cashflow">
@@ -99,18 +95,18 @@
             <tfoot><tr class="bg-yellow"><td colspan="2" class="text-right">Tổng số doanh thu bán phòng 24 tháng:</td><td class="text-right text-red" id="out-total-dt"></td><td></td></tr></tfoot>
         </table>
         
-        <h3 style="text-align:center; color:#1a365d; margin: 25px 0 10px 0; font-size: 16px;">HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
+        <h3 style="text-align:center; color:#1a365d; margin: 25px 0 10px 0; font-size: 16px;">TỔNG KẾT HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
         <table>
             <tbody>
                 <tr><td class="text-left"><strong>Giá niêm yết Căn hộ (đã bao gồm VAT)</strong></td><td class="text-right" id="res-gia-ny"></td></tr>
-                <tr style="background:#f7fafc"><td class="text-left" style="font-style:italic">Tổng các khoản chiết khấu (Từ phiếu tính giá)</td><td class="text-right" id="res-ck"></td></tr>
+                <tr style="background:#f7fafc"><td class="text-left" style="font-style:italic">Tổng các khoản chiết khấu (Từ bảng tính giá)</td><td class="text-right" id="res-ck"></td></tr>
                 <tr><td class="text-left"><strong>Doanh thu bán phòng trong 24 tháng</strong></td><td class="text-right" id="res-dt"></td></tr>
                 <tr class="bg-yellow"><td class="text-left"><strong style="color:#c53030; font-size:16px">TỶ LỆ THU HỒI VỐN ĐẦU TƯ SAU 24 THÁNG</strong></td><td class="text-right text-red" id="res-roi" style="font-size:18px"></td></tr>
             </tbody>
         </table>
 
         <div class="copyright-footer">
-            © Developed by <strong> DMD – R&D FLV</strong>
+            Product by <strong>R&D FLV</strong>
         </div>
     </div>
 </div>
@@ -161,9 +157,11 @@
 
         monthsData.forEach((item, index) => {
             if (index < gapGCN) {
+                // Trước khi nhận GCN: Tách lẻ từng tháng
                 if (tempGroup.length > 0) { groupedData.push([...tempGroup]); tempGroup = []; }
                 groupedData.push([item]);
             } else {
+                // Sau khi nhận GCN: Bắt đầu gộp
                 if (tempGroup.length === 0) {
                     tempGroup.push(item);
                 } else {
@@ -187,9 +185,9 @@
                 let m = group[0];
                 totalDT += m.doanhThu;
                 
-                let note = "Dòng tiền dự kiến khai thác trong tháng";
+                let note = "Khai thác trong khi chờ GCN";
                 if (monthsData.indexOf(m) === gapGCN - 1 && gapGCN > 0) {
-                    note = "<strong style='color:#d53f8c'>Thời điểm nhận GCN</strong>";
+                    note = "<strong style='color:#d53f8c'>Thời điểm dự kiến nhận GCN</strong>";
                 }
 
                 tbody.innerHTML += `<tr>
