@@ -65,9 +65,30 @@
 
         @media print {
             .no-print { display: none !important; }
-            .container { box-shadow: none; padding: 0; }
+            .container { box-shadow: none; padding: 0; margin: 0; width: 100%; max-width: 100%; }
             #result-box { display: block !important; }
             #print-title-area { display: block !important; }
+            tr { page-break-inside: avoid; }
+        }
+
+        /* --- CHỈ THÊM CSS MỚI Ở ĐÂY CHO MOBILE & PDF --- */
+        @page { size: A4 portrait; margin: 15mm 10mm; }
+        
+        @media screen and (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; margin: 0; }
+            h1 { font-size: 20px; }
+            .form-grid { grid-template-columns: 1fr; gap: 15px; }
+            .full-width { grid-column: span 1; }
+            .info-grid-2col { grid-template-columns: 1fr; gap: 15px; }
+            .mode-selector { flex-direction: column; gap: 15px; }
+            .print-header-actions { flex-direction: column; align-items: stretch; gap: 15px; text-align: center; }
+            .action-buttons { flex-direction: column; }
+            .action-buttons button { width: 100%; justify-content: center; }
+            .final-price-container { flex-direction: column; text-align: center; gap: 10px; }
+            .info-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+            /* Gắn scroll dọc ngang cho các bảng nếu bị tràn màn hình */
+            .custom-table, .schedule-table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;}
         }
     </style>
 </head>
@@ -460,7 +481,6 @@
         setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
     }
 
-    // ĐÂY LÀ HÀM ĐÃ ĐƯỢC CHỈNH SỬA ĐỂ TÍNH ĐÚNG THÁNG BẮT ĐẦU VÀ SỐ THÁNG ĐỢT CUỐI THEO PTTT
     function transferToIndex2() {
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
         const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText);
@@ -473,30 +493,27 @@
         let hdmbDate = new Date(depDate);
         hdmbDate.setDate(hdmbDate.getDate() + 10);
 
-        let handoverQSDDate = new Date(hdmbDate); // Điểm rơi 50%
-        let finalDate = new Date(hdmbDate); // Điểm rơi đợt cuối
+        let handoverQSDDate = new Date(hdmbDate); 
+        let finalDate = new Date(hdmbDate); 
 
-        // Nội suy thời gian dựa theo Phương thức thanh toán
         if (plan === '30') {
             handoverQSDDate = new Date(depDate);
-            handoverQSDDate.setDate(handoverQSDDate.getDate() + 30); // 30 ngày nhận QSD
+            handoverQSDDate.setDate(handoverQSDDate.getDate() + 30); 
             finalDate = new Date(handoverQSDDate);
-            finalDate.setMonth(finalDate.getMonth() + 1); // Đợt cuối mặc định 1 tháng sau
+            finalDate.setMonth(finalDate.getMonth() + 1); 
         } else if (plan === '12') {
-            handoverQSDDate.setDate(handoverQSDDate.getDate() + 180); // Lần 4 đạt 50%
-            finalDate.setDate(finalDate.getDate() + 360); // Lần 7 (đợt cố định cuối cùng)
+            handoverQSDDate.setDate(handoverQSDDate.getDate() + 180); 
+            finalDate.setDate(finalDate.getDate() + 360); 
         } else {
-            handoverQSDDate.setDate(handoverQSDDate.getDate() + 360); // Lần 4 đạt 50%
-            finalDate.setDate(finalDate.getDate() + 1080); // Lần 9 (đợt cố định cuối cùng)
+            handoverQSDDate.setDate(handoverQSDDate.getDate() + 360); 
+            finalDate.setDate(finalDate.getDate() + 1080); 
         }
 
-        // Tháng bắt đầu tính doanh thu (Bắt đầu từ ngày mùng 1 của THÁNG KẾ TIẾP sau khi nhận QSD)
         let revStartDate = new Date(handoverQSDDate.getFullYear(), handoverQSDDate.getMonth() + 1, 1);
 
-        // Khoảng cách từ lúc bắt đầu doanh thu cho tới đợt cuối cùng
         let gap = (finalDate.getFullYear() - revStartDate.getFullYear()) * 12 + (finalDate.getMonth() - revStartDate.getMonth()) + 1; 
         if (gap < 0) gap = 0;
-        if (gap > 24) gap = 24; // Khóa max 24 tháng vì biểu đồ chỉ chạy 24 tháng
+        if (gap > 24) gap = 24; 
 
         const calcCK = originalPrice - finalPrice;
 
@@ -504,9 +521,9 @@
             giaNiemYet: originalPrice,
             tongChietKhau: calcCK,
             tongCK: calcCK,
-            thangBG: revStartDate.getMonth() + 1, // Tháng xuất phát
+            thangBG: revStartDate.getMonth() + 1, 
             namBG: revStartDate.getFullYear(),
-            thangChoGCN: gap // Số tháng liệt kê chi tiết
+            thangChoGCN: gap 
         };
         
         localStorage.setItem('dataStep1', JSON.stringify(data));
