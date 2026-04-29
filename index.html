@@ -35,8 +35,11 @@
         .btn-main { background: #d53f8c; color: white; border: none; padding: 18px 40px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
         .btn-main:hover { background: #b83280; transform: translateY(-2px); }
 
-        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
-        
+        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-next { background: #2b6cb0; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .print-header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .action-buttons { display: flex; gap: 10px; }
+
         #result-box { display: none; margin-top: 40px; padding-top: 30px; border-top: 2px solid #edf2f7; text-align: left; }
         .result-header { color: #1a365d; margin: 0; font-size: 22px; }
         
@@ -175,7 +178,10 @@
 
         <div class="print-header-actions">
             <h3 class="result-header">CHI TIẾT PHIẾU TÍNH GIÁ</h3>
-            <button class="btn-print no-print" onclick="inPhieu()">TẢI PDF / IN PHIẾU</button>
+            <div class="action-buttons no-print">
+                <button class="btn-print" onclick="inPhieu()">TẢI PDF / IN PHIẾU</button>
+                <button id="btn-goto-index2" class="btn-next" style="display: none;" onclick="transferToIndex2()">TÍNH DÒNG TIỀN BÁN PHÒNG & ROI →</button>
+            </div>
         </div>
         
         <div class="info-grid-2col">
@@ -211,7 +217,7 @@
 
 <script>
     let masterData = [];
-    const VAT_RATE = 0.1; // Khai báo VAT 10% để dễ quản lý và thay đổi khi có chính sách mới
+    const VAT_RATE = 0.1; // Khai báo VAT 10%
 
     function cleanAndParsePrice(val) {
         if (!val) return 0;
@@ -306,7 +312,7 @@
 
     function calculateDate(baseDate, daysToAdd) {
         if (daysToAdd === null) return "Theo TB của CĐT";
-        let d = new Date(baseDate.getTime()); // Clone object để không dính reference
+        let d = new Date(baseDate.getTime());
         d.setDate(d.getDate() + daysToAdd);
         return getFormattedDate(d);
     }
@@ -329,7 +335,6 @@
         let breakdown = "";
 
         if (mode === 'auto') {
-            // Bước 1: CK Phương thức thanh toán
             let planRate = 0;
             let planText = "";
             if (plan === '12') { planRate = 0.075; planText = "Thanh toán 12 tháng (7.5%)"; }
@@ -338,42 +343,39 @@
             if (planRate > 0) {
                 let disc = currentPrice * planRate;
                 breakdown += `• ${planText}: <strong>-${formatMoney(disc)}</strong><br>`;
-                currentPrice -= disc; // Cập nhật currentPrice cho bước sau
+                currentPrice -= disc;
             }
 
-            // Bước 2: CK Bổ sung (Lũy kế theo từng dòng nhập vào)
             if (document.getElementById('enable-extra').checked) {
                 const rows = document.querySelectorAll('#extra-body tr');
                 rows.forEach((row, index) => {
                     const type = row.querySelector('.ex-type').value;
                     const base = row.querySelector('.ex-base').value;
-                    const val = parseFloat(row.querySelector('.ex-value').value) || 0; // Fix NaN error
+                    const val = parseFloat(row.querySelector('.ex-value').value) || 0;
 
                     if (val > 0) {
                         if (type === 'amount') {
                             breakdown += `• CK bổ sung tiền mặt #${index + 1}: <strong>-${formatMoney(val)}</strong><br>`;
-                            currentPrice -= val; // Trừ thẳng tiền mặt
+                            currentPrice -= val;
                         } else {
-                            // Fix VAT_RATE linh hoạt thay vì fix cứng 1.1
                             let refPrice = (base === 'before-vat') ? (currentPrice / (1 + VAT_RATE)) : currentPrice;
                             let extraDisc = refPrice * (val / 100);
                             let baseText = (base === 'before-vat') ? "giá hiện tại (trước VAT)" : "giá hiện tại (sau VAT)";
                             breakdown += `• CK bổ sung #${index + 1} (${val}% trên ${baseText}): <strong>-${formatMoney(extraDisc)}</strong><br>`;
-                            currentPrice -= extraDisc; // Trừ % chiết khấu
+                            currentPrice -= extraDisc;
                         }
                     }
                 });
             }
         } else {
-            // Chế độ tùy chỉnh (Lũy kế từng dòng)
             const names = document.querySelectorAll('.c-name');
             const rates = document.querySelectorAll('.c-rate');
             names.forEach((n, idx) => {
-                let r = (parseFloat(rates[idx].value) || 0) / 100; // Fix NaN error
+                let r = (parseFloat(rates[idx].value) || 0) / 100;
                 if (r > 0) {
                     let disc = currentPrice * r;
                     breakdown += `• ${n.value || 'Chiết khấu bổ sung'} (${rates[idx].value}%): <strong>-${formatMoney(disc)}</strong><br>`;
-                    currentPrice -= disc; // Luôn cập nhật giá trị lũy kế
+                    currentPrice -= disc;
                 }
             });
         }
@@ -391,6 +393,7 @@
 
         renderSchedule(plan, currentPrice, depositDateStr);
         document.getElementById('result-box').style.display = 'block';
+        document.getElementById('btn-goto-index2').style.display = 'inline-flex';
         window.scrollTo({ top: document.getElementById('result-box').offsetTop, behavior: 'smooth' });
     }
 
@@ -399,7 +402,6 @@
         container.innerHTML = "";
         const deposit = 100000000;
         
-        // Khắc phục lỗi timezone khi parse Date
         const parts = depositDateStr.split('-');
         let depositObj = new Date(parts[0], parts[1] - 1, parts[2]); 
         
@@ -448,13 +450,12 @@
             <tr style="background:#fff5f5"><td><strong>Đặt cọc</strong></td><td class="td-center">-</td><td class="td-center">${getFormattedDate(depositObj)}</td><td class="td-center">-</td><td class="td-right">${formatMoney(deposit)}</td></tr>`;
         
         let cumulativePercent = 0;
-        let cumulativeAmtPaid = 0; // Lưu tổng tiền đã chia các đợt để trừ vào đợt cuối
+        let cumulativeAmtPaid = 0; 
         
         steps.forEach((s, i) => {
             cumulativePercent += (s.p * 100);
             
             let amt = 0;
-            // Xử lý chống sai số làm tròn cho đợt cuối cùng
             if (i === steps.length - 1) {
                 amt = finalPrice - cumulativeAmtPaid; 
             } else {
@@ -464,13 +465,9 @@
 
             let note = "";
             if (i === 0) {
-                // Khắc phục lỗi số tiền âm ở đợt 1
                 let extraPay = amt - deposit;
-                if (extraPay <= 0) {
-                    note = `<br><small>(Đã cọc đủ cho Lần 1)</small>`;
-                } else {
-                    note = `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(extraPay)})</small>`;
-                }
+                if (extraPay <= 0) note = `<br><small>(Đã cọc đủ cho Lần 1)</small>`;
+                else note = `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(extraPay)})</small>`;
             }
             
             let handoverNote = "";
@@ -482,6 +479,35 @@
         });
         html += `<tr style="background:#edf2f7"><td colspan="3" class="td-right"><strong>Tổng cộng:</strong></td><td class="td-center">100%</td><td class="td-right"><strong style="color:#e53e3e">${formatMoney(finalPrice)}</strong></td></tr></table>`;
         container.innerHTML = html;
+    }
+
+    function transferToIndex2() {
+        const codeInput = document.getElementById('apt-code').value.toUpperCase().trim();
+        const apt = masterData.find(item => String(item.ma_can || item.Ma_can).toUpperCase().trim() === codeInput);
+        if (!apt) return alert("Không tìm thấy dữ liệu căn hộ!");
+
+        const depositDateStr = document.getElementById('deposit-date').value;
+        const plan = document.getElementById('payment-plan').value;
+        const parts = depositDateStr.split('-');
+        let handoverDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+        if (plan === '30') handoverDate.setDate(handoverDate.getDate() + 30);
+        else if (plan === '12') handoverDate.setDate(handoverDate.getDate() + 370); // 10 ngày HĐMB + 360 ngày BG
+        else handoverDate.setDate(handoverDate.getDate() + 1090); // 10 ngày HĐMB + 1080 ngày BG
+
+        const originalPrice = cleanAndParsePrice(apt.Tong_gia || apt.Tong_Gia);
+        const finalPriceStr = document.getElementById('out-price-final').innerText;
+        const finalPrice = cleanAndParsePrice(finalPriceStr);
+
+        const dataStep1 = {
+            giaNiemYet: originalPrice,
+            tongChietKhau: originalPrice - finalPrice,
+            thangBG: handoverDate.getMonth() + 1,
+            namBG: handoverDate.getFullYear()
+        };
+
+        localStorage.setItem('dataStep1', JSON.stringify(dataStep1));
+        window.location.href = 'index2.html';
     }
 
     function inPhieu() {
