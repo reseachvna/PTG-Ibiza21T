@@ -10,7 +10,12 @@
         h1, h2 { color: #1a365d; text-align: center; margin-bottom: 10px; }
         h1 { font-size: 24px; text-transform: uppercase; }
         
-        /* Chia 2 cột phần đầu */
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .nav-back { color: #3182ce; text-decoration: none; font-weight: bold; }
+        .nav-back:hover { text-decoration: underline; }
+        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-print:hover { background: #2f855a; }
+
         .top-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; align-items: stretch; }
         
         .mock-data-box { background: #e6fffa; border: 1px dashed #319795; padding: 20px; border-radius: 8px; height: 100%; box-sizing: border-box;}
@@ -23,7 +28,7 @@
         
         .form-group { display: flex; flex-direction: column; margin-bottom: 5px;}
         .form-group label { font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #4a5568; }
-        .form-group input { padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 15px; outline: none;}
+        .form-group input { padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 15px; outline: none; width: 90%;}
         .form-group input:focus { border-color: #3182ce; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background: #fff; font-size: 14px;}
@@ -38,16 +43,25 @@
         .btn-calc { background: #d53f8c; color: white; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; display: block; margin: 0 auto 30px auto; }
         .btn-calc:hover { background: #b83280; }
         
-        .nav-back { display: inline-block; margin-bottom: 20px; color: #3182ce; text-decoration: none; font-weight: bold; }
-        .nav-back:hover { text-decoration: underline; }
-
         .note { font-size: 12px; color: #718096; font-style: italic; text-align: left;}
+
+        /* CSS DÀNH RIÊNG CHO KHI IN / XUẤT PDF */
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: #fff; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; border: none;}
+            .mock-data-box { background: #fff; border: 1px solid #319795; }
+            .assumptions-box { background: #fff; border: 1px solid #e2e8f0; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <a href="Index.html" class="nav-back">← Quay lại Bảng tính giá</a>
+    <div class="header-actions no-print">
+        <a href="index.html" class="nav-back">← Quay lại Bảng tính giá</a>
+        <button class="btn-print" onclick="window.print()">🖨️ TẢI PDF / IN PHIẾU</button>
+    </div>
 
     <h1>Dòng thu từ kinh doanh cho thuê</h1>
     <h2 style="font-size: 16px; color: #4a5568; margin-bottom: 30px;">(Tạm tính trong thời gian 24 tháng kể từ ngày nhận bàn giao QSD)</h2>
@@ -58,19 +72,19 @@
             <div class="grid-2">
                 <div class="form-group">
                     <label>Giá niêm yết (VNĐ)</label>
-                    <input type="number" id="in-gia-niem-yet" value="1419000000">
+                    <input type="number" id="in-gia-niem-yet" value="1419000000" class="no-print-border">
                 </div>
                 <div class="form-group">
                     <label>Tổng chiết khấu (VNĐ)</label>
-                    <input type="number" id="in-tong-ck" value="106425000">
+                    <input type="number" id="in-tong-ck" value="106425000" class="no-print-border">
                 </div>
                 <div class="form-group">
                     <label>Tháng bàn giao (1-12)</label>
-                    <input type="number" id="in-thang-bg" value="11" min="1" max="12">
+                    <input type="number" id="in-thang-bg" value="11" min="1" max="12" class="no-print-border">
                 </div>
                 <div class="form-group">
                     <label>Năm bàn giao (YYYY)</label>
-                    <input type="number" id="in-nam-bg" value="2026">
+                    <input type="number" id="in-nam-bg" value="2026" class="no-print-border">
                 </div>
             </div>
         </div>
@@ -98,7 +112,7 @@
         </div>
     </div>
 
-    <button class="btn-calc" onclick="calculateROI()">TÍNH TOÁN DÒNG TIỀN & ROI</button>
+    <button class="btn-calc no-print" onclick="calculateROI()">TÍNH TOÁN DÒNG TIỀN & ROI</button>
 
     <table id="table-cashflow">
         <thead>
@@ -165,51 +179,149 @@
     }
 
     function calculateROI() {
-        const giaNiemYet = parseFloat(document.getElementById('in-gia-niem-yet').value) || 0;
-        const tongCK = parseFloat(document.getElementById('in-tong-ck').value) || 0;
-        const startMonth = parseInt(document.getElementById('in-thang-bg').value) || 11;
-        const startYear = parseInt(document.getElementById('in-nam-bg').value) || 2026;
+        try {
+            const giaNiemYet = parseFloat(document.getElementById('in-gia-niem-yet').value) || 0;
+            const tongCK = parseFloat(document.getElementById('in-tong-ck').value) || 0;
+            const startMonth = parseInt(document.getElementById('in-thang-bg').value) || 11;
+            const startYear = parseInt(document.getElementById('in-nam-bg').value) || 2026;
 
-        const giaPhong = parseFloat(document.getElementById('in-gia-phong').value) || 0;
-        const occThap = (parseFloat(document.getElementById('in-occ-thap').value) || 0) / 100;
-        const occCao = (parseFloat(document.getElementById('in-occ-cao').value) || 0) / 100;
-        const ngayTB = parseInt(document.getElementById('in-ngay-tb').value) || 30;
+            const giaPhong = parseFloat(document.getElementById('in-gia-phong').value) || 0;
+            const occThap = (parseFloat(document.getElementById('in-occ-thap').value) || 0) / 100;
+            const occCao = (parseFloat(document.getElementById('in-occ-cao').value) || 0) / 100;
+            const ngayTB = parseInt(document.getElementById('in-ngay-tb').value) || 30;
 
-        let monthsData = [];
-        let currentMonth = startMonth;
-        let currentYear = startYear;
+            let monthsData = [];
+            let currentMonth = startMonth;
+            let currentYear = startYear;
 
-        for (let i = 0; i < 24; i++) {
-            let season = getSeason(currentMonth);
-            let occ = (season === 'cao') ? occCao : occThap;
-            let soDem = Math.round(ngayTB * occ);
-            let doanhThu = soDem * giaPhong;
+            // Lập danh sách 24 tháng
+            for (let i = 0; i < 24; i++) {
+                let season = getSeason(currentMonth);
+                let occ = (season === 'cao') ? occCao : occThap;
+                let soDem = Math.round(ngayTB * occ);
+                let doanhThu = soDem * giaPhong;
 
-            monthsData.push({
-                thang: currentMonth,
-                nam: currentYear,
-                season: season,
-                soDem: soDem,
-                doanhThu: doanhThu
-            });
+                monthsData.push({
+                    thang: currentMonth,
+                    nam: currentYear,
+                    season: season,
+                    soDem: soDem,
+                    doanhThu: doanhThu
+                });
 
-            currentMonth++;
-            if (currentMonth > 12) {
-                currentMonth = 1;
-                currentYear++;
+                currentMonth++;
+                if (currentMonth > 12) {
+                    currentMonth = 1;
+                    currentYear++;
+                }
             }
-        }
 
-        let groupedData = [];
-        let tempGroup = [];
+            // Thuật toán gộp nhóm các tháng liên tiếp cùng mùa
+            let groupedData = [];
+            let tempGroup = [];
 
-        monthsData.forEach((item, index) => {
-            if (tempGroup.length === 0) {
-                tempGroup.push(item);
-            } else {
-                let lastItem = tempGroup[tempGroup.length - 1];
-                if (item.soDem === lastItem.soDem) {
+            monthsData.forEach((item, index) => {
+                if (tempGroup.length === 0) {
                     tempGroup.push(item);
                 } else {
+                    let lastItem = tempGroup[tempGroup.length - 1];
+                    if (item.soDem === lastItem.soDem) {
+                        tempGroup.push(item);
+                    } else {
+                        groupedData.push([...tempGroup]);
+                        tempGroup = [item];
+                    }
+                }
+                if (index === monthsData.length - 1) {
                     groupedData.push([...tempGroup]);
-                    tempGroup = [item];
+                }
+            });
+
+            // Hiển thị ra bảng
+            const tbody = document.getElementById('tbody-cashflow');
+            tbody.innerHTML = '';
+            let totalDoanhThu24T = 0;
+
+            groupedData.forEach((group, index) => {
+                let rowHtml = '';
+                let isLastMonth = (index === groupedData.length - 1 && group.length === 1); 
+
+                if (group.length === 1) {
+                    let m = group[0];
+                    totalDoanhThu24T += m.doanhThu;
+                    let ghiChu = isLastMonth ? 'Kết thúc 24 tháng được miễn phí Phi dịch vụ' : '';
+                    
+                    rowHtml = `<tr>
+                        <td>Tháng ${m.thang}/${m.nam}</td>
+                        <td>${m.soDem}</td>
+                        <td class="text-right">${formatMoney(m.doanhThu)}</td>
+                        <td class="note">số đêm = OCC theo mùa * số đêm nghỉ tb<br>DT = số đêm * giá phòng * số tháng</td>
+                        <td class="note">${ghiChu}</td>
+                    </tr>`;
+                } else {
+                    let firstM = group[0];
+                    let lastM = group[group.length - 1];
+                    let numMonths = group.length;
+                    let groupDoanhThu = firstM.doanhThu * numMonths;
+                    totalDoanhThu24T += groupDoanhThu;
+
+                    let ghiChu = (index === groupedData.length - 1) ? 'Kết thúc 24 tháng được miễn phí Phi dịch vụ' : 'Cách tính tương tự, nhưng tóm tắt thời gian lại cho gọn';
+
+                    rowHtml = `<tr>
+                        <td>Từ Tháng ${firstM.thang}/${firstM.nam} đến Tháng ${lastM.thang}/${lastM.nam}</td>
+                        <td>${firstM.soDem * numMonths} <br><span style="font-size:11px">(${firstM.soDem} x ${numMonths} tháng)</span></td>
+                        <td class="text-right">${formatMoney(groupDoanhThu)}</td>
+                        <td class="note">${numMonths} tháng</td>
+                        <td class="note">${ghiChu}</td>
+                    </tr>`;
+                }
+                tbody.innerHTML += rowHtml;
+            });
+
+            // Cập nhật tổng số liệu
+            document.getElementById('out-tong-doanh-thu').innerText = formatMoney(totalDoanhThu24T);
+            document.getElementById('out-gia-niem-yet').innerText = formatMoney(giaNiemYet);
+            document.getElementById('out-tong-ck').innerText = formatMoney(tongCK);
+            document.getElementById('out-dt-24t').innerText = formatMoney(totalDoanhThu24T);
+
+            let tongLoiIch = tongCK + totalDoanhThu24T;
+            document.getElementById('out-tong-loi-ich').innerText = formatMoney(tongLoiIch);
+
+            let roi = 0;
+            if (giaNiemYet > 0) {
+                roi = (tongLoiIch / giaNiemYet) * 100;
+            }
+            
+            document.getElementById('out-roi').innerText = roi.toFixed(2).replace('.', ',') + '%';
+
+        } catch (error) {
+            console.error("Lỗi vẽ bảng tính:", error);
+        }
+    }
+
+    window.onload = function() {
+        try {
+            // Lấy dữ liệu từ index.html (Đảm bảo localStorage trên GitHub Pages chạy tốt)
+            const savedData = localStorage.getItem('dataStep1');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if(data.giaNiemYet) document.getElementById('in-gia-niem-yet').value = data.giaNiemYet;
+                if(data.tongChietKhau) document.getElementById('in-tong-ck').value = data.tongChietKhau;
+                if(data.thangBG) document.getElementById('in-thang-bg').value = data.thangBG;
+                if(data.namBG) document.getElementById('in-nam-bg').value = data.namBG;
+            }
+        } catch (e) {
+            console.warn("Lỗi đọc dữ liệu localStorage.", e);
+        }
+
+        calculateROI();
+        
+        const inputs = document.querySelectorAll('input[type="number"]');
+        inputs.forEach(input => {
+            input.addEventListener('input', calculateROI);
+        });
+    };
+</script>
+
+</body>
+</html>
