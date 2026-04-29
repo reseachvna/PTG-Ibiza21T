@@ -75,7 +75,7 @@
 
 <div class="container">
     <div style="text-align: center;" class="no-print">
-        <h1>Bảng tính giá & Tiến độ thanh toán (tạm tính)</h1>
+        <h1>Bảng tính giá & Tiến độ thanh toán</h1>
         <h2>Flamingo Ibiza Party Resort</h2>
         <div id="data-status">⏳ Đang tải dữ liệu sản phẩm...</div>
     </div>
@@ -176,7 +176,7 @@
         <div class="print-header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 class="result-header">CHI TIẾT PHIẾU TÍNH GIÁ</h3>
             <div class="action-buttons no-print" style="display: flex; gap: 10px;">
-                <button class="btn-print" onclick="inPhieu()">TẢI PDF / IN PHIẾU</button>
+                <button class="btn-print" onclick="inPhieu()" style="margin-bottom: 0;">TẢI PDF / IN PHIẾU</button>
                 <button id="btn-goto-index2" style="background: #2b6cb0; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: none;" onclick="transferToIndex2()">DÒNG THU BÁN PHÒNG & ROI →</button>
             </div>
         </div>
@@ -441,7 +441,7 @@
         steps.forEach((s, i) => {
             cumulativePercent += (s.p * 100);
             let amt = Math.round((finalPrice * s.p) / 1000) * 1000;
-            let note = (i === 0) ? `<br><small>(Đã cọc. Khách hàng nộp thêm: ${formatMoney(amt - deposit)})</small>` : "";
+            let note = (i === 0) ? `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(amt - deposit)})</small>` : "";
             
             let handoverNote = "";
             if (cumulativePercent >= 50 && (cumulativePercent - (s.p * 100)) < 50) {
@@ -460,37 +460,53 @@
         setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
     }
 
-    // === HÀM TRUYỀN DỮ LIỆU ĐƯỢC CHÈN THÊM VÀO CUỐI ===
+    // ĐÂY LÀ HÀM ĐÃ ĐƯỢC CHỈNH SỬA ĐỂ TÍNH ĐÚNG THÁNG BẮT ĐẦU VÀ SỐ THÁNG ĐỢT CUỐI THEO PTTT
     function transferToIndex2() {
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
         const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText);
         
         const plan = document.getElementById('payment-plan').value;
         const depositDateStr = document.getElementById('deposit-date').value;
-        let d = new Date();
-        if (depositDateStr) { d = new Date(depositDateStr); }
-        
-        let gap = 6; 
-        // THUẬT TOÁN ĐỊNH VỊ ĐIỂM RƠI 50% VÀ THỜI GIAN CHỜ GCN
+        let depDate = new Date();
+        if (depositDateStr) { depDate = new Date(depositDateStr); }
+
+        let hdmbDate = new Date(depDate);
+        hdmbDate.setDate(hdmbDate.getDate() + 10);
+
+        let handoverQSDDate = new Date(hdmbDate); // Điểm rơi 50%
+        let finalDate = new Date(hdmbDate); // Điểm rơi đợt cuối
+
+        // Nội suy thời gian dựa theo Phương thức thanh toán
         if (plan === '30') {
-            d.setDate(d.getDate() + 30); // T+30 đạt 95%
-            gap = 1; // 1 tháng sau nhận sổ
+            handoverQSDDate = new Date(depDate);
+            handoverQSDDate.setDate(handoverQSDDate.getDate() + 30); // 30 ngày nhận QSD
+            finalDate = new Date(handoverQSDDate);
+            finalDate.setMonth(finalDate.getMonth() + 1); // Đợt cuối mặc định 1 tháng sau
         } else if (plan === '12') {
-            d.setDate(d.getDate() + 180); // Lần 4 đạt 50% (Bàn giao QSD)
-            gap = 6; // Chờ đến T+360 (6 tháng) để đóng Lần 7
+            handoverQSDDate.setDate(handoverQSDDate.getDate() + 180); // Lần 4 đạt 50%
+            finalDate.setDate(finalDate.getDate() + 360); // Lần 7 (đợt cố định cuối cùng)
         } else {
-            d.setDate(d.getDate() + 360); // Lần 4 đạt 50% (Bàn giao QSD)
-            gap = 24; // Chờ đến T+1080 (24 tháng) để đóng đợt cuối
+            handoverQSDDate.setDate(handoverQSDDate.getDate() + 360); // Lần 4 đạt 50%
+            finalDate.setDate(finalDate.getDate() + 1080); // Lần 9 (đợt cố định cuối cùng)
         }
-        
+
+        // Tháng bắt đầu tính doanh thu (Bắt đầu từ ngày mùng 1 của THÁNG KẾ TIẾP sau khi nhận QSD)
+        let revStartDate = new Date(handoverQSDDate.getFullYear(), handoverQSDDate.getMonth() + 1, 1);
+
+        // Khoảng cách từ lúc bắt đầu doanh thu cho tới đợt cuối cùng
+        let gap = (finalDate.getFullYear() - revStartDate.getFullYear()) * 12 + (finalDate.getMonth() - revStartDate.getMonth()) + 1; 
+        if (gap < 0) gap = 0;
+        if (gap > 24) gap = 24; // Khóa max 24 tháng vì biểu đồ chỉ chạy 24 tháng
+
         const calcCK = originalPrice - finalPrice;
 
         const data = {
             giaNiemYet: originalPrice,
             tongChietKhau: calcCK,
-            thangBG: d.getMonth() + 1,
-            namBG: d.getFullYear(),
-            thangChoGCN: gap // Truyền chính xác khoảng cách này sang Index 2
+            tongCK: calcCK,
+            thangBG: revStartDate.getMonth() + 1, // Tháng xuất phát
+            namBG: revStartDate.getFullYear(),
+            thangChoGCN: gap // Số tháng liệt kê chi tiết
         };
         
         localStorage.setItem('dataStep1', JSON.stringify(data));
