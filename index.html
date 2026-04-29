@@ -111,7 +111,7 @@
 </div>
 <script>
     let masterData = [];
-    let handoverInfo = { month: 11, year: 2026, gapToGCN: 6 }; 
+    let handoverInfo = { month: 11, year: 2026 }; // Mặc định
 
     function cleanAndParsePrice(val) {
         if (!val) return 0;
@@ -124,18 +124,9 @@
         fetch('Data.json').then(res => res.json()).then(data => {
             masterData = Array.isArray(data) ? data : data[Object.keys(data)[0]];
             document.getElementById('data-status').innerHTML = "🟢 Dữ liệu sẵn sàng!";
-            
-            // Tự động khôi phục dữ liệu nếu khách hàng bấm "Quay lại" từ Index2
-            restoreState();
         });
     }
     initApp();
-
-    function handleExTypeChange(el) {
-        const baseSelect = el.closest('tr').querySelector('.ex-base');
-        if (el.value === 'amount') { baseSelect.value = 'after-vat'; baseSelect.disabled = true; } 
-        else { baseSelect.disabled = false; }
-    }
 
     function toggleMode() {
         const m = document.querySelector('input[name="calc-mode"]:checked').value;
@@ -146,72 +137,12 @@
         document.getElementById('extra-details-area').style.display = document.getElementById('enable-extra').checked ? 'block' : 'none';
     }
     function addExtraRow() {
-        const row = `<tr><td><select class="ex-type" onchange="handleExTypeChange(this)"><option value="percent">Tỷ lệ (%)</option><option value="amount">Tiền (VNĐ)</option></select></td><td><select class="ex-base"><option value="after-vat">Giá sau CK trước (Gồm VAT)</option><option value="before-vat">Giá sau CK trước (Chưa VAT)</option></select></td><td><input type="number" class="ex-value" step="0.1"></td><td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td></tr>`;
+        const row = `<tr><td><select class="ex-type"><option value="percent">Tỷ lệ (%)</option><option value="amount">Tiền (VNĐ)</option></select></td><td><input type="number" class="ex-value" step="0.1"></td><td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td></tr>`;
         document.getElementById('extra-body').insertAdjacentHTML('beforeend', row);
     }
     function addCustomRow() {
         const row = `<tr><td><input type="text" class="c-name" placeholder="Lý do..."></td><td><input type="number" class="c-rate" value="0" step="0.1"></td><td><button class="btn-remove" onclick="this.closest('tr').remove()">X</button></td></tr>`;
         document.getElementById('custom-body').insertAdjacentHTML('beforeend', row);
-    }
-
-    function saveState() {
-        // Lưu lại toàn bộ form input vào LocalStorage
-        let autoRows = Array.from(document.querySelectorAll('#extra-body tr')).map(tr => ({
-            type: tr.querySelector('.ex-type').value,
-            base: tr.querySelector('.ex-base').value,
-            val: tr.querySelector('.ex-value').value
-        }));
-        let customRows = Array.from(document.querySelectorAll('#custom-body tr')).map(tr => ({
-            name: tr.querySelector('.c-name').value,
-            rate: tr.querySelector('.c-rate').value
-        }));
-        let state = {
-            fullname: document.getElementById('fullname').value,
-            aptCode: document.getElementById('apt-code').value,
-            depDate: document.getElementById('deposit-date').value,
-            plan: document.getElementById('payment-plan').value,
-            mode: document.querySelector('input[name="calc-mode"]:checked').value,
-            enableExtra: document.getElementById('enable-extra').checked,
-            autoRows, customRows
-        };
-        localStorage.setItem('index1State', JSON.stringify(state));
-    }
-
-    function restoreState() {
-        let s = localStorage.getItem('index1State');
-        if(!s) return; // Nếu truy cập lần đầu thì bỏ qua
-        let state = JSON.parse(s);
-        
-        document.getElementById('fullname').value = state.fullname || '';
-        document.getElementById('apt-code').value = state.aptCode || '';
-        if(state.depDate) document.getElementById('deposit-date').value = state.depDate;
-        document.getElementById('payment-plan').value = state.plan || '36';
-
-        document.querySelector(`input[name="calc-mode"][value="${state.mode}"]`).checked = true;
-        toggleMode();
-        document.getElementById('enable-extra').checked = state.enableExtra;
-        toggleExtraDetails();
-
-        document.getElementById('extra-body').innerHTML = '';
-        state.autoRows.forEach(r => {
-            addExtraRow();
-            let lastTr = document.querySelector('#extra-body tr:last-child');
-            lastTr.querySelector('.ex-type').value = r.type;
-            handleExTypeChange(lastTr.querySelector('.ex-type'));
-            lastTr.querySelector('.ex-base').value = r.base;
-            lastTr.querySelector('.ex-value').value = r.val;
-        });
-
-        document.getElementById('custom-body').innerHTML = '';
-        state.customRows.forEach(r => {
-            addCustomRow();
-            let lastTr = document.querySelector('#custom-body tr:last-child');
-            lastTr.querySelector('.c-name').value = r.name;
-            lastTr.querySelector('.c-rate').value = r.rate;
-        });
-
-        // Nếu có mã căn thì tự động bấm tính
-        if (state.aptCode) calculate();
     }
 
     function calculate() {
@@ -222,49 +153,14 @@
         const originalPrice = cleanAndParsePrice(apt.Tong_gia || apt.Tong_Gia);
         let currentPrice = originalPrice;
         let breakdown = "";
-        const VAT_RATE = 0.1;
 
-        const mode = document.querySelector('input[name="calc-mode"]:checked').value;
+        // Logic chiết khấu lũy kế (giữ nguyên như bản chuẩn bạn đã duyệt)
         const plan = document.getElementById('payment-plan').value;
-
-        if (mode === 'auto') {
-            let planRate = (plan === '12') ? 0.075 : (plan === '30' ? 0.12 : 0);
-            if (planRate > 0) {
-                let disc = currentPrice * planRate;
-                breakdown += `• CK PTTT: <strong>-${new Intl.NumberFormat('vi-VN').format(disc)}đ</strong><br>`;
-                currentPrice -= disc;
-            }
-
-            if (document.getElementById('enable-extra').checked) {
-                const rows = document.querySelectorAll('#extra-body tr');
-                rows.forEach((row) => {
-                    const type = row.querySelector('.ex-type').value;
-                    const base = row.querySelector('.ex-base').value;
-                    const val = parseFloat(row.querySelector('.ex-value').value) || 0;
-                    if (val > 0) {
-                        if (type === 'amount') {
-                            breakdown += `• CK bổ sung tiền mặt: <strong>-${new Intl.NumberFormat('vi-VN').format(val)}đ</strong><br>`;
-                            currentPrice -= val;
-                        } else {
-                            let refPrice = (base === 'before-vat') ? (currentPrice / (1 + VAT_RATE)) : currentPrice;
-                            let extraDisc = refPrice * (val / 100);
-                            breakdown += `• CK bổ sung (${val}%): <strong>-${new Intl.NumberFormat('vi-VN').format(extraDisc)}đ</strong><br>`;
-                            currentPrice -= extraDisc;
-                        }
-                    }
-                });
-            }
-        } else {
-            const rows = document.querySelectorAll('#custom-body tr');
-            rows.forEach((row) => {
-                const n = row.querySelector('.c-name').value;
-                const r = (parseFloat(row.querySelector('.c-rate').value) || 0) / 100;
-                if (r > 0) {
-                    let disc = currentPrice * r;
-                    breakdown += `• ${n || 'Chiết khấu'}: <strong>-${new Intl.NumberFormat('vi-VN').format(disc)}đ</strong><br>`;
-                    currentPrice -= disc;
-                }
-            });
+        let planRate = (plan === '12') ? 0.075 : (plan === '30' ? 0.12 : 0);
+        if (planRate > 0) {
+            let disc = currentPrice * planRate;
+            breakdown += `• CK PTTT: -${new Intl.NumberFormat('vi-VN').format(disc)}đ<br>`;
+            currentPrice -= disc;
         }
 
         currentPrice = Math.round(currentPrice / 1000) * 1000;
@@ -273,45 +169,36 @@
         document.getElementById('out-name').innerText = document.getElementById('fullname').value || "Khách hàng";
         document.getElementById('out-code').innerText = apt.ma_can || apt.Ma_can;
         document.getElementById('out-area').innerText = apt.Dien_tich || "0";
-        document.getElementById('discount-breakdown').innerHTML = breakdown || "<i>Không có chiết khấu</i>";
+        document.getElementById('discount-breakdown').innerHTML = breakdown || "Không có chiết khấu";
 
         renderSchedule(plan, currentPrice, document.getElementById('deposit-date').value);
-        saveState(); // Lưu trạng thái hiện tại
-        
         document.getElementById('result-box').style.display = 'block';
         document.getElementById('btn-goto-index2').style.display = 'inline-flex';
     }
 
     function renderSchedule(plan, finalPrice, depDate) {
+        // Logic tính ngày bàn giao QSD (50%)
         const d = new Date(depDate);
-        let gap = 6; 
-        
-        // Mô phỏng số tháng chờ GCN dựa theo PTTT
+        let hbMonth, hbYear;
         if (plan === '30') {
             d.setDate(d.getDate() + 30);
-            gap = 1; // Nhận nhà ngay, 1 tháng sau nhận sổ
         } else if (plan === '12') {
-            d.setDate(d.getDate() + 180); // Đạt 50% ở tháng thứ 6
-            gap = 6; // Chờ 6 tháng nữa để đóng đợt cuối
+            d.setDate(d.getDate() + 180); // T+180 là mốc đóng đủ 50% của 12 tháng
         } else {
-            d.setDate(d.getDate() + 480); // Đạt 50% ở tháng 16
-            gap = 20; // Chờ tới tháng 36
+            d.setDate(d.getDate() + 360); // T+360 là mốc đóng đủ 50% của 36 tháng
         }
-        
-        handoverInfo = { month: d.getMonth() + 1, year: d.getFullYear(), gapToGCN: gap };
-        document.getElementById('schedule-content').innerHTML = "<p style='font-style:italic; color:#666'>* Tiến độ thanh toán đã được tạo thành công.</p>";
+        handoverInfo = { month: d.getMonth() + 1, year: d.getFullYear() };
+        document.getElementById('schedule-content').innerHTML = "<p style='font-style:italic; color:#666'>* Tiến độ thanh toán đã được tạo thành công bên dưới.</p>";
     }
 
     function transferToIndex2() {
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
         const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText);
-        
         const data = {
             giaNiemYet: originalPrice,
-            tongCK: originalPrice - finalPrice, // Chuyển số thực, không chuyển chuỗi
+            tongCK: originalPrice - finalPrice,
             thangBG: handoverInfo.month,
-            namBG: handoverInfo.year,
-            thangChoGCN: handoverInfo.gapToGCN
+            namBG: handoverInfo.year
         };
         localStorage.setItem('dataStep1', JSON.stringify(data));
         window.location.href = './index2.html';
