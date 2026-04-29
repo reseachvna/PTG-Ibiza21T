@@ -11,8 +11,8 @@
         h1 { font-size: 24px; text-transform: uppercase; }
         
         .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .nav-back { color: #3182ce; text-decoration: none; font-weight: bold; }
-        .nav-back:hover { text-decoration: underline; }
+        .nav-back { color: #3182ce; text-decoration: none; font-weight: bold; padding: 8px 15px; border-radius: 4px; background: #ebf8ff; border: 1px solid #bee3f8;}
+        .nav-back:hover { text-decoration: none; background: #bee3f8; }
         .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-print:hover { background: #2f855a; }
 
@@ -45,7 +45,6 @@
         
         .note { font-size: 12px; color: #718096; font-style: italic; text-align: left;}
 
-        /* CSS DÀNH RIÊNG CHO KHI IN / XUẤT PDF */
         @media print {
             .no-print { display: none !important; }
             body { background-color: #fff; padding: 0; }
@@ -59,7 +58,7 @@
 
 <div class="container">
     <div class="header-actions no-print">
-        <a href="index.html" class="nav-back">← Quay lại Bảng tính giá</a>
+        <a href="./index.html" class="nav-back">← Quay lại Bảng tính giá</a>
         <button class="btn-print" onclick="window.print()">🖨️ TẢI PDF / IN PHIẾU</button>
     </div>
 
@@ -72,19 +71,19 @@
             <div class="grid-2">
                 <div class="form-group">
                     <label>Giá niêm yết (VNĐ)</label>
-                    <input type="number" id="in-gia-niem-yet" value="1419000000" class="no-print-border">
+                    <input type="number" id="in-gia-niem-yet" value="1419000000">
                 </div>
                 <div class="form-group">
                     <label>Tổng chiết khấu (VNĐ)</label>
-                    <input type="number" id="in-tong-ck" value="106425000" class="no-print-border">
+                    <input type="number" id="in-tong-ck" value="106425000">
                 </div>
                 <div class="form-group">
                     <label>Tháng bàn giao (1-12)</label>
-                    <input type="number" id="in-thang-bg" value="11" min="1" max="12" class="no-print-border">
+                    <input type="number" id="in-thang-bg" value="11" min="1" max="12">
                 </div>
                 <div class="form-group">
                     <label>Năm bàn giao (YYYY)</label>
-                    <input type="number" id="in-nam-bg" value="2026" class="no-print-border">
+                    <input type="number" id="in-nam-bg" value="2026">
                 </div>
             </div>
         </div>
@@ -101,11 +100,11 @@
                     <input type="number" id="in-ngay-tb" value="30">
                 </div>
                 <div class="form-group">
-                    <label class="text-red">OCC Mùa thấp điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Tháng 11 - Tháng 2)</span></label>
+                    <label class="text-red">OCC Mùa thấp điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Th.11 - Th.2)</span></label>
                     <input type="number" id="in-occ-thap" value="40">
                 </div>
                 <div class="form-group">
-                    <label class="text-red">OCC Mùa cao điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Tháng 3 - Tháng 10)</span></label>
+                    <label class="text-red">OCC Mùa cao điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Th.3 - Th.10)</span></label>
                     <input type="number" id="in-occ-cao" value="80">
                 </div>
             </div>
@@ -178,23 +177,31 @@
         return 'thap';
     }
 
+    // Hàm lấy giá trị an toàn, chống lỗi NaN gây sập bảng
+    function getSafeValue(id, defaultVal) {
+        let el = document.getElementById(id);
+        if (!el) return defaultVal;
+        let val = parseFloat(el.value);
+        return isNaN(val) ? defaultVal : val;
+    }
+
     function calculateROI() {
         try {
-            const giaNiemYet = parseFloat(document.getElementById('in-gia-niem-yet').value) || 0;
-            const tongCK = parseFloat(document.getElementById('in-tong-ck').value) || 0;
-            const startMonth = parseInt(document.getElementById('in-thang-bg').value) || 11;
-            const startYear = parseInt(document.getElementById('in-nam-bg').value) || 2026;
+            // Lấy dữ liệu với giá trị mặc định an toàn
+            const giaNiemYet = getSafeValue('in-gia-niem-yet', 0);
+            const tongCK = getSafeValue('in-tong-ck', 0);
+            const startMonth = getSafeValue('in-thang-bg', 11);
+            const startYear = getSafeValue('in-nam-bg', 2026);
 
-            const giaPhong = parseFloat(document.getElementById('in-gia-phong').value) || 0;
-            const occThap = (parseFloat(document.getElementById('in-occ-thap').value) || 0) / 100;
-            const occCao = (parseFloat(document.getElementById('in-occ-cao').value) || 0) / 100;
-            const ngayTB = parseInt(document.getElementById('in-ngay-tb').value) || 30;
+            const giaPhong = getSafeValue('in-gia-phong', 0);
+            const occThap = getSafeValue('in-occ-thap', 0) / 100;
+            const occCao = getSafeValue('in-occ-cao', 0) / 100;
+            const ngayTB = getSafeValue('in-ngay-tb', 0);
 
             let monthsData = [];
             let currentMonth = startMonth;
             let currentYear = startYear;
 
-            // Lập danh sách 24 tháng
             for (let i = 0; i < 24; i++) {
                 let season = getSeason(currentMonth);
                 let occ = (season === 'cao') ? occCao : occThap;
@@ -216,7 +223,6 @@
                 }
             }
 
-            // Thuật toán gộp nhóm các tháng liên tiếp cùng mùa
             let groupedData = [];
             let tempGroup = [];
 
@@ -237,8 +243,8 @@
                 }
             });
 
-            // Hiển thị ra bảng
             const tbody = document.getElementById('tbody-cashflow');
+            if (!tbody) return; // Bảo vệ nếu DOM chưa sẵn sàng
             tbody.innerHTML = '';
             let totalDoanhThu24T = 0;
 
@@ -278,7 +284,6 @@
                 tbody.innerHTML += rowHtml;
             });
 
-            // Cập nhật tổng số liệu
             document.getElementById('out-tong-doanh-thu').innerText = formatMoney(totalDoanhThu24T);
             document.getElementById('out-gia-niem-yet').innerText = formatMoney(giaNiemYet);
             document.getElementById('out-tong-ck').innerText = formatMoney(tongCK);
@@ -291,7 +296,6 @@
             if (giaNiemYet > 0) {
                 roi = (tongLoiIch / giaNiemYet) * 100;
             }
-            
             document.getElementById('out-roi').innerText = roi.toFixed(2).replace('.', ',') + '%';
 
         } catch (error) {
@@ -299,9 +303,9 @@
         }
     }
 
-    window.onload = function() {
+    // Đảm bảo DOM load xong mới chạy (Tránh lỗi load file chậm trên Github)
+    document.addEventListener("DOMContentLoaded", function() {
         try {
-            // Lấy dữ liệu từ index.html (Đảm bảo localStorage trên GitHub Pages chạy tốt)
             const savedData = localStorage.getItem('dataStep1');
             if (savedData) {
                 const data = JSON.parse(savedData);
@@ -311,16 +315,18 @@
                 if(data.namBG) document.getElementById('in-nam-bg').value = data.namBG;
             }
         } catch (e) {
-            console.warn("Lỗi đọc dữ liệu localStorage.", e);
+            console.warn("Lấy dữ liệu từ Cache thất bại.", e);
         }
 
+        // Khởi chạy bảng lần đầu
         calculateROI();
         
+        // Gắn sự kiện để tự động tính khi thay đổi số
         const inputs = document.querySelectorAll('input[type="number"]');
         inputs.forEach(input => {
             input.addEventListener('input', calculateROI);
         });
-    };
+    });
 </script>
 
 </body>
