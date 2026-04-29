@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Tính Dòng Tiền & ROI</title>
+    <title>Bảng tính dòng tiền và hiệu quả đầu tư (tạm tính)</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; line-height: 1.5; margin: 0; padding: 20px;}
         .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -115,7 +115,6 @@
         let monthsData = [];
         let currM = sMonth, currY = sYear;
 
-        // Sinh 24 tháng dòng tiền
         for (let i = 0; i < 24; i++) {
             let season = getSeason(currM);
             let occ = (season === 'cao') ? oCao : oThap;
@@ -128,17 +127,14 @@
             currM++; if (currM > 12) { currM = 1; currY++; }
         }
 
-        // Tách và gộp thông minh
         let groupedData = [];
         let tempGroup = [];
 
         monthsData.forEach((item, index) => {
             if (index < gapGCN) {
-                // Trước khi nhận GCN: In ra từng tháng
                 if (tempGroup.length > 0) { groupedData.push([...tempGroup]); tempGroup = []; }
                 groupedData.push([item]);
             } else {
-                // Sau khi nhận GCN: Gộp theo mùa
                 if (tempGroup.length === 0) {
                     tempGroup.push(item);
                 } else {
@@ -153,7 +149,6 @@
         });
         if (tempGroup.length > 0) groupedData.push([...tempGroup]);
 
-        // Xuất ra HTML
         const tbody = document.getElementById('tbody-cashflow');
         tbody.innerHTML = '';
         let totalDT = 0;
@@ -205,10 +200,12 @@
         const saved = localStorage.getItem('dataStep1');
         if (saved) {
             const data = JSON.parse(saved);
+            
             document.getElementById('in-gia-niem-yet').value = fmt.format(data.giaNiemYet || 0);
             
-            // Xử lý chuẩn xác biến tổng chiết khấu đã đổi từ file 1
-            document.getElementById('in-tong-ck').value = fmt.format(data.tongChietKhau || 0);
+            // Xử lý thông minh: Quét cả 2 biến để chắc chắn không bị trượt dữ liệu
+            let realCK = data.tongChietKhau !== undefined ? data.tongChietKhau : (data.tongCK || 0);
+            document.getElementById('in-tong-ck').value = fmt.format(realCK);
             
             if(data.thangBG) document.getElementById('in-thang-bg').value = data.thangBG;
             if(data.namBG) document.getElementById('in-nam-bg').value = data.namBG;
