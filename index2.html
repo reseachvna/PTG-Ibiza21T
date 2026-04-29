@@ -10,18 +10,21 @@
         h1, h2 { color: #1a365d; text-align: center; margin-bottom: 10px; }
         h1 { font-size: 24px; text-transform: uppercase; }
         
-        .mock-data-box { background: #e6fffa; border: 1px dashed #319795; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
-        .mock-data-box h3 { color: #285e61; margin-top: 0; font-size: 16px; margin-bottom: 15px;}
+        /* Chia 2 cột phần đầu */
+        .top-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; align-items: stretch; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .mock-data-box { background: #e6fffa; border: 1px dashed #319795; padding: 20px; border-radius: 8px; height: 100%; box-sizing: border-box;}
+        .mock-data-box h3 { color: #285e61; margin-top: 0; font-size: 16px; margin-bottom: 15px; border-bottom: 1px dashed #b2f5ea; padding-bottom: 10px;}
         
-        .form-group { display: flex; flex-direction: column; margin-bottom: 10px;}
+        .assumptions-box { border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; background: #fff; height: 100%; box-sizing: border-box;}
+        .assumptions-box h3 { margin-top: 0; color: #1a365d; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;}
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .form-group { display: flex; flex-direction: column; margin-bottom: 5px;}
         .form-group label { font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #4a5568; }
         .form-group input { padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 15px; outline: none;}
         .form-group input:focus { border-color: #3182ce; }
-        
-        .assumptions-box { border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 30px; background: #fff; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background: #fff; font-size: 14px;}
         th, td { border: 1px solid #cbd5e0; padding: 12px; text-align: center; }
@@ -44,51 +47,53 @@
 <body>
 
 <div class="container">
-    <a href="index.html" class="nav-back">← Quay lại Bảng tính giá</a>
+    <a href="Index.html" class="nav-back">← Quay lại Bảng tính giá</a>
 
     <h1>Dòng thu từ kinh doanh cho thuê</h1>
     <h2 style="font-size: 16px; color: #4a5568; margin-bottom: 30px;">(Tạm tính trong thời gian 24 tháng kể từ ngày nhận bàn giao QSD)</h2>
 
-    <div class="mock-data-box">
-        <h3>🔗 Dữ liệu liên kết (Được chuyển tự động từ bảng tính giá)</h3>
-        <div class="grid-4">
-            <div class="form-group">
-                <label>Giá niêm yết (VNĐ)</label>
-                <input type="number" id="in-gia-niem-yet" value="1419000000">
-            </div>
-            <div class="form-group">
-                <label>Tổng chiết khấu (VNĐ)</label>
-                <input type="number" id="in-tong-ck" value="106425000">
-            </div>
-            <div class="form-group">
-                <label>Tháng bàn giao (1-12)</label>
-                <input type="number" id="in-thang-bg" value="11" min="1" max="12">
-            </div>
-            <div class="form-group">
-                <label>Năm bàn giao (YYYY)</label>
-                <input type="number" id="in-nam-bg" value="2026">
+    <div class="top-panels">
+        <div class="mock-data-box">
+            <h3>🔗 Dữ liệu liên kết (Tự động từ Bảng tính giá)</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Giá niêm yết (VNĐ)</label>
+                    <input type="number" id="in-gia-niem-yet" value="1419000000">
+                </div>
+                <div class="form-group">
+                    <label>Tổng chiết khấu (VNĐ)</label>
+                    <input type="number" id="in-tong-ck" value="106425000">
+                </div>
+                <div class="form-group">
+                    <label>Tháng bàn giao (1-12)</label>
+                    <input type="number" id="in-thang-bg" value="11" min="1" max="12">
+                </div>
+                <div class="form-group">
+                    <label>Năm bàn giao (YYYY)</label>
+                    <input type="number" id="in-nam-bg" value="2026">
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="assumptions-box">
-        <h3 style="margin-top:0; color:#1a365d; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px;">📊 Thông số kinh doanh (Cho phép nhập tay)</h3>
-        <div class="grid-4">
-            <div class="form-group">
-                <label class="text-red">Giá bán phòng / đêm (VNĐ)</label>
-                <input type="number" id="in-gia-phong" value="2000000">
-            </div>
-            <div class="form-group">
-                <label class="text-red">OCC Mùa thấp điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Tháng 11 - Tháng 2)</span></label>
-                <input type="number" id="in-occ-thap" value="40">
-            </div>
-            <div class="form-group">
-                <label class="text-red">OCC Mùa cao điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Tháng 3 - Tháng 10)</span></label>
-                <input type="number" id="in-occ-cao" value="80">
-            </div>
-            <div class="form-group">
-                <label class="text-red">Số đêm nghỉ TB / tháng</label>
-                <input type="number" id="in-ngay-tb" value="30">
+        <div class="assumptions-box">
+            <h3>📊 Thông số giả định kinh doanh (Nhập tay)</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="text-red">Giá bán phòng / đêm (VNĐ)</label>
+                    <input type="number" id="in-gia-phong" value="2000000">
+                </div>
+                <div class="form-group">
+                    <label class="text-red">Số đêm nghỉ TB / tháng</label>
+                    <input type="number" id="in-ngay-tb" value="30">
+                </div>
+                <div class="form-group">
+                    <label class="text-red">OCC Mùa thấp điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Tháng 11 - Tháng 2)</span></label>
+                    <input type="number" id="in-occ-thap" value="40">
+                </div>
+                <div class="form-group">
+                    <label class="text-red">OCC Mùa cao điểm (%)<br><span style="font-weight:normal; font-size: 11px;">(Tháng 3 - Tháng 10)</span></label>
+                    <input type="number" id="in-occ-cao" value="80">
+                </div>
             </div>
         </div>
     </div>
@@ -208,89 +213,3 @@
                 } else {
                     groupedData.push([...tempGroup]);
                     tempGroup = [item];
-                }
-            }
-            if (index === monthsData.length - 1) {
-                groupedData.push([...tempGroup]);
-            }
-        });
-
-        const tbody = document.getElementById('tbody-cashflow');
-        tbody.innerHTML = '';
-        let totalDoanhThu24T = 0;
-
-        groupedData.forEach((group, index) => {
-            let rowHtml = '';
-            let isLastMonth = (index === groupedData.length - 1 && group.length === 1); 
-
-            if (group.length === 1) {
-                let m = group[0];
-                totalDoanhThu24T += m.doanhThu;
-                let ghiChu = isLastMonth ? 'Kết thúc 24 tháng được miễn phí Phi dịch vụ' : '';
-                
-                rowHtml = `<tr>
-                    <td>Tháng ${m.thang}/${m.nam}</td>
-                    <td>${m.soDem}</td>
-                    <td class="text-right">${formatMoney(m.doanhThu)}</td>
-                    <td class="note">số đêm = OCC theo mùa * số đêm nghỉ tb<br>DT = số đêm * giá phòng * số tháng</td>
-                    <td class="note">${ghiChu}</td>
-                </tr>`;
-            } else {
-                let firstM = group[0];
-                let lastM = group[group.length - 1];
-                let numMonths = group.length;
-                let groupDoanhThu = firstM.doanhThu * numMonths;
-                totalDoanhThu24T += groupDoanhThu;
-
-                let ghiChu = (index === groupedData.length - 1) ? 'Kết thúc 24 tháng được miễn phí Phi dịch vụ' : 'Cách tính tương tự, nhưng tóm tắt thời gian lại cho gọn';
-
-                rowHtml = `<tr>
-                    <td>Từ Tháng ${firstM.thang}/${firstM.nam} đến Tháng ${lastM.thang}/${lastM.nam}</td>
-                    <td>${firstM.soDem * numMonths} <br><span style="font-size:11px">(${firstM.soDem} x ${numMonths} tháng)</span></td>
-                    <td class="text-right">${formatMoney(groupDoanhThu)}</td>
-                    <td class="note">${numMonths} tháng</td>
-                    <td class="note">${ghiChu}</td>
-                </tr>`;
-            }
-            tbody.innerHTML += rowHtml;
-        });
-
-        document.getElementById('out-tong-doanh-thu').innerText = formatMoney(totalDoanhThu24T);
-
-        document.getElementById('out-gia-niem-yet').innerText = formatMoney(giaNiemYet);
-        document.getElementById('out-tong-ck').innerText = formatMoney(tongCK);
-        document.getElementById('out-dt-24t').innerText = formatMoney(totalDoanhThu24T);
-
-        let tongLoiIch = tongCK + totalDoanhThu24T;
-        document.getElementById('out-tong-loi-ich').innerText = formatMoney(tongLoiIch);
-
-        let roi = 0;
-        if (giaNiemYet > 0) {
-            roi = (tongLoiIch / giaNiemYet) * 100;
-        }
-        
-        document.getElementById('out-roi').innerText = roi.toFixed(2).replace('.', ',') + '%';
-    }
-
-    window.onload = function() {
-        // Tự động kéo dữ liệu từ Index 1 (nếu có)
-        const savedData = localStorage.getItem('dataStep1');
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            document.getElementById('in-gia-niem-yet').value = data.giaNiemYet;
-            document.getElementById('in-tong-ck').value = data.tongChietKhau;
-            document.getElementById('in-thang-bg').value = data.thangBG;
-            document.getElementById('in-nam-bg').value = data.namBG;
-        }
-
-        calculateROI();
-        
-        const inputs = document.querySelectorAll('input[type="number"]');
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateROI);
-        });
-    };
-</script>
-
-</body>
-</html>
