@@ -35,10 +35,6 @@
         .btn-main { background: #d53f8c; color: white; border: none; padding: 18px 40px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
         .btn-main:hover { background: #b83280; transform: translateY(-2px); }
 
-        /* Style cho nút chuyển trang mới */
-        .btn-nav { background: #4a5568; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-top: 20px;}
-        .btn-nav:hover { background: #2d3748; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-
         .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
         
         #result-box { display: none; margin-top: 40px; padding-top: 30px; border-top: 2px solid #edf2f7; text-align: left; }
@@ -171,12 +167,6 @@
 
     <button class="btn-main no-print" onclick="calculate()">TẠO PHIẾU TÍNH GIÁ</button>
 
-    <div style="text-align: center;" class="no-print">
-        <a href="index2.html" class="btn-nav">
-            <span>🔄</span> TÍNH DOANH THU BÁN PHÒNG
-        </a>
-    </div>
-
     <div id="result-box">
         <div style="text-align: center; display: none; margin-bottom: 30px;" id="print-title-area">
             <h1>Bảng tính giá & Tiến độ thanh toán</h1>
@@ -221,6 +211,7 @@
 
 <script>
     let masterData = [];
+    const VAT_RATE = 0.1; // Khai báo VAT 10% để dễ quản lý và thay đổi khi có chính sách mới
 
     function cleanAndParsePrice(val) {
         if (!val) return 0;
@@ -230,8 +221,15 @@
 
     function initApp() {
         const statusEl = document.getElementById('data-status');
-        document.getElementById('deposit-date').valueAsDate = new Date();
-        document.getElementById('current-print-date').innerText = getFormattedDate(new Date());
+        
+        // Format ngày hiện tại cho input date
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('deposit-date').value = `${yyyy}-${mm}-${dd}`;
+        
+        document.getElementById('current-print-date').innerText = getFormattedDate(today);
 
         fetch('Data.json')
             .then(res => res.json())
@@ -308,15 +306,16 @@
 
     function calculateDate(baseDate, daysToAdd) {
         if (daysToAdd === null) return "Theo TB của CĐT";
-        let d = new Date(baseDate);
+        let d = new Date(baseDate.getTime()); // Clone object để không dính reference
         d.setDate(d.getDate() + daysToAdd);
         return getFormattedDate(d);
     }
 
     function calculate() {
         const codeInput = document.getElementById('apt-code').value.toUpperCase().trim();
-        const depositDate = document.getElementById('deposit-date').value;
+        const depositDateStr = document.getElementById('deposit-date').value;
         
+        if (!depositDateStr) return alert("Vui lòng chọn ngày đặt cọc!");
         if (masterData.length === 0) return alert("Hệ thống chưa tải dữ liệu!");
         
         const apt = masterData.find(item => String(item.ma_can || item.Ma_can).toUpperCase().trim() === codeInput);
@@ -330,7 +329,7 @@
         let breakdown = "";
 
         if (mode === 'auto') {
-            // 1. CK Phương thức thanh toán
+            // Bước 1: CK Phương thức thanh toán
             let planRate = 0;
             let planText = "";
             if (plan === '12') { planRate = 0.075; planText = "Thanh toán 12 tháng (7.5%)"; }
@@ -339,41 +338,42 @@
             if (planRate > 0) {
                 let disc = currentPrice * planRate;
                 breakdown += `• ${planText}: <strong>-${formatMoney(disc)}</strong><br>`;
-                currentPrice -= disc;
+                currentPrice -= disc; // Cập nhật currentPrice cho bước sau
             }
 
-            // 2. CK Bổ sung (Lũy kế nhiều dòng)
+            // Bước 2: CK Bổ sung (Lũy kế theo từng dòng nhập vào)
             if (document.getElementById('enable-extra').checked) {
                 const rows = document.querySelectorAll('#extra-body tr');
                 rows.forEach((row, index) => {
                     const type = row.querySelector('.ex-type').value;
                     const base = row.querySelector('.ex-base').value;
-                    const val = parseFloat(row.querySelector('.ex-value').value) || 0;
+                    const val = parseFloat(row.querySelector('.ex-value').value) || 0; // Fix NaN error
 
                     if (val > 0) {
                         if (type === 'amount') {
                             breakdown += `• CK bổ sung tiền mặt #${index + 1}: <strong>-${formatMoney(val)}</strong><br>`;
-                            currentPrice -= val;
+                            currentPrice -= val; // Trừ thẳng tiền mặt
                         } else {
-                            let refPrice = (base === 'before-vat') ? (currentPrice / 1.1) : currentPrice;
+                            // Fix VAT_RATE linh hoạt thay vì fix cứng 1.1
+                            let refPrice = (base === 'before-vat') ? (currentPrice / (1 + VAT_RATE)) : currentPrice;
                             let extraDisc = refPrice * (val / 100);
                             let baseText = (base === 'before-vat') ? "giá hiện tại (trước VAT)" : "giá hiện tại (sau VAT)";
                             breakdown += `• CK bổ sung #${index + 1} (${val}% trên ${baseText}): <strong>-${formatMoney(extraDisc)}</strong><br>`;
-                            currentPrice -= extraDisc;
+                            currentPrice -= extraDisc; // Trừ % chiết khấu
                         }
                     }
                 });
             }
         } else {
-            // Chế độ tùy chỉnh
+            // Chế độ tùy chỉnh (Lũy kế từng dòng)
             const names = document.querySelectorAll('.c-name');
             const rates = document.querySelectorAll('.c-rate');
             names.forEach((n, idx) => {
-                let r = parseFloat(rates[idx].value) / 100;
+                let r = (parseFloat(rates[idx].value) || 0) / 100; // Fix NaN error
                 if (r > 0) {
                     let disc = currentPrice * r;
                     breakdown += `• ${n.value || 'Chiết khấu bổ sung'} (${rates[idx].value}%): <strong>-${formatMoney(disc)}</strong><br>`;
-                    currentPrice -= disc;
+                    currentPrice -= disc; // Luôn cập nhật giá trị lũy kế
                 }
             });
         }
@@ -389,7 +389,7 @@
         document.getElementById('out-price-final').innerText = formatMoney(currentPrice);
         document.getElementById('discount-breakdown').innerHTML = breakdown;
 
-        renderSchedule(plan, currentPrice, depositDate);
+        renderSchedule(plan, currentPrice, depositDateStr);
         document.getElementById('result-box').style.display = 'block';
         window.scrollTo({ top: document.getElementById('result-box').offsetTop, behavior: 'smooth' });
     }
@@ -398,8 +398,12 @@
         const container = document.getElementById('schedule-content');
         container.innerHTML = "";
         const deposit = 100000000;
-        let depositObj = new Date(depositDateStr);
-        let hdmbObj = new Date(depositDateStr);
+        
+        // Khắc phục lỗi timezone khi parse Date
+        const parts = depositDateStr.split('-');
+        let depositObj = new Date(parts[0], parts[1] - 1, parts[2]); 
+        
+        let hdmbObj = new Date(depositObj.getTime());
         hdmbObj.setDate(hdmbObj.getDate() + 10); 
         
         let steps = [];
@@ -444,17 +448,37 @@
             <tr style="background:#fff5f5"><td><strong>Đặt cọc</strong></td><td class="td-center">-</td><td class="td-center">${getFormattedDate(depositObj)}</td><td class="td-center">-</td><td class="td-right">${formatMoney(deposit)}</td></tr>`;
         
         let cumulativePercent = 0;
+        let cumulativeAmtPaid = 0; // Lưu tổng tiền đã chia các đợt để trừ vào đợt cuối
+        
         steps.forEach((s, i) => {
             cumulativePercent += (s.p * 100);
-            let amt = Math.round((finalPrice * s.p) / 1000) * 1000;
-            let note = (i === 0) ? `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(amt - deposit)})</small>` : "";
+            
+            let amt = 0;
+            // Xử lý chống sai số làm tròn cho đợt cuối cùng
+            if (i === steps.length - 1) {
+                amt = finalPrice - cumulativeAmtPaid; 
+            } else {
+                amt = Math.round((finalPrice * s.p) / 1000) * 1000;
+                cumulativeAmtPaid += amt;
+            }
+
+            let note = "";
+            if (i === 0) {
+                // Khắc phục lỗi số tiền âm ở đợt 1
+                let extraPay = amt - deposit;
+                if (extraPay <= 0) {
+                    note = `<br><small>(Đã cọc đủ cho Lần 1)</small>`;
+                } else {
+                    note = `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(extraPay)})</small>`;
+                }
+            }
             
             let handoverNote = "";
             if (cumulativePercent >= 50 && (cumulativePercent - (s.p * 100)) < 50) {
                 handoverNote = `<span class="handover-note">Nhận bàn giao quyền sử dụng căn hộ</span>`;
             }
 
-            html += `<tr><td>${s.d} ${handoverNote}</td><td class="td-center">${s.t}</td><td class="td-center">${calculateDate(hdmbObj, s.days)}</td><td class="td-center">${s.p*100}%</td><td class="td-right"><strong>${formatMoney(amt)}</strong>${note}</td></tr>`;
+            html += `<tr><td>${s.d} ${handoverNote}</td><td class="td-center">${s.t}</td><td class="td-center">${calculateDate(hdmbObj, s.days)}</td><td class="td-center">${Math.round(s.p*100)}%</td><td class="td-right"><strong>${formatMoney(amt)}</strong>${note}</td></tr>`;
         });
         html += `<tr style="background:#edf2f7"><td colspan="3" class="td-right"><strong>Tổng cộng:</strong></td><td class="td-center">100%</td><td class="td-right"><strong style="color:#e53e3e">${formatMoney(finalPrice)}</strong></td></tr></table>`;
         container.innerHTML = html;
