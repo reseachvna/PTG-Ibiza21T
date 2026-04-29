@@ -471,26 +471,26 @@
         if (depositDateStr) { d = new Date(depositDateStr); }
         
         let gap = 6; 
+        // THUẬT TOÁN ĐỊNH VỊ ĐIỂM RƠI 50% VÀ THỜI GIAN CHỜ GCN
         if (plan === '30') {
-            d.setDate(d.getDate() + 30); 
-            gap = 1;
+            d.setDate(d.getDate() + 30); // T+30 đạt 95%
+            gap = 1; // 1 tháng sau nhận sổ
         } else if (plan === '12') {
-            d.setDate(d.getDate() + 360); 
-            gap = 6;
+            d.setDate(d.getDate() + 180); // Lần 4 đạt 50% (Bàn giao QSD)
+            gap = 6; // Chờ đến T+360 (6 tháng) để đóng Lần 7
         } else {
-            d.setDate(d.getDate() + 1080); 
-            gap = 6;
+            d.setDate(d.getDate() + 360); // Lần 4 đạt 50% (Bàn giao QSD)
+            gap = 24; // Chờ đến T+1080 (24 tháng) để đóng đợt cuối
         }
         
-        const calcCK = originalPrice - finalPrice; // Tính ra giá trị thật
+        const calcCK = originalPrice - finalPrice;
 
         const data = {
             giaNiemYet: originalPrice,
-            tongChietKhau: calcCK, // Dùng biến mới
-            tongCK: calcCK,        // Backup cả biến cũ để chắc chắn không bị miss
+            tongChietKhau: calcCK,
             thangBG: d.getMonth() + 1,
             namBG: d.getFullYear(),
-            thangChoGCN: gap
+            thangChoGCN: gap // Truyền chính xác khoảng cách này sang Index 2
         };
         
         localStorage.setItem('dataStep1', JSON.stringify(data));
