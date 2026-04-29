@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Tính Dòng Tiền & ROI</title>
+    <title>Bảng tính dòng tiền kinh doanh và hiệu quả đầu tư</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; line-height: 1.4; margin: 0; padding: 20px;}
         .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -34,7 +34,6 @@
         
         .btn-calc { background: #d53f8c; color: white; border: none; padding: 10px 30px; font-size: 15px; font-weight: bold; border-radius: 30px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
         
-        /* Box phân tích chuyên sâu (Hòa vốn & Lãi vốn) */
         .advanced-analysis { display: none; background: #ebf8ff; border: 1px solid #90cdf4; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .advanced-analysis h4 { color: #2b6cb0; margin-top: 0; font-size: 16px; margin-bottom: 15px; border-bottom: 1px dashed #bee3f8; padding-bottom: 8px;}
         .analysis-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
@@ -76,6 +75,7 @@
             .header-actions { flex-direction: column; gap: 15px; align-items: stretch; text-align: center; }
             .btn-calc { width: 100%; padding: 12px; font-size: 15px; }
             table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+            .analysis-row { flex-direction: column; gap: 5px; }
         }
     </style>
 </head>
@@ -87,7 +87,7 @@
     </div>
 
     <h1>Dòng thu từ kinh doanh cho thuê</h1>
-    <h2>(Dự kiến 24 tháng đầu tiên kể từ khi bắt đầu kinh doanh)</h2>
+    <h2>(Dự kiến 24 tháng đầu tiên kể từ khi nhận bàn giao QSD)</h2>
 
     <input type="hidden" id="hdmb-month" value="">
     <input type="hidden" id="hdmb-year" value="">
@@ -109,17 +109,17 @@
             </div>
         </div>
         <div class="data-panel">
-            <h3>📊 Thông số giả định (Nhập tay)</h3>
+            <h3>📊 Thông số </h3>
             <div class="grid-2">
                 <div class="form-group"><label>Giá phòng/đêm (VNĐ)</label><input type="number" id="in-gia-phong" value="2000000"></div>
                 <div class="form-group"><label>Số đêm TB/tháng</label><input type="number" id="in-ngay-tb" value="30"></div>
-                <div class="form-group"><label>OCC Thấp điểm (%) <span style="font-weight:normal">(Th.11-Th.2)</span></label><input type="number" id="in-occ-thap" value="40"></div>
-                <div class="form-group"><label>OCC Cao điểm (%) <span style="font-weight:normal">(Th.3-Th.10)</span></label><input type="number" id="in-occ-cao" value="80"></div>
+                <div class="form-group"><label>OCC Thấp điểm (%) <span style="font-weight:normal">(Tháng 11-Tháng 2)</span></label><input type="number" id="in-occ-thap" value="40"></div>
+                <div class="form-group"><label>OCC Cao điểm (%) <span style="font-weight:normal">(Tháng 3-Tháng 10)</span></label><input type="number" id="in-occ-cao" value="80"></div>
             </div>
         </div>
     </div>
 
-    <button class="btn-calc no-print" onclick="showResults()">TÍNH DÒNG THU BÁN PHÒNG & ROI</button>
+    <button class="btn-calc no-print" onclick="showResults()">TÍNH DÒNG THU KINH DOANH</button>
 
     <div id="result-area">
         <table id="table-cashflow">
@@ -128,27 +128,27 @@
             <tfoot><tr class="bg-yellow"><td colspan="2" class="text-right">Tổng số doanh thu bán phòng 24 tháng:</td><td class="text-right text-red" id="out-total-dt"></td><td></td></tr></tfoot>
         </table>
         
-        <h3 style="text-align:center; color:#1a365d; margin: 15px 0 10px 0; font-size: 16px;">TỔNG KẾT HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
+        <h3 style="text-align:center; color:#1a365d; margin: 15px 0 10px 0; font-size: 16px;"> HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
         <table>
             <tbody>
                 <tr><td class="text-left">Giá niêm yết Căn hộ (đã bao gồm VAT)</td><td class="text-right" id="res-gia-ny"></td></tr>
                 <tr style="background:#f7fafc"><td class="text-left" style="font-style:italic">Tổng các khoản chiết khấu</td><td class="text-right" id="res-ck"></td></tr>
                 <tr><td class="text-left" style="color:#2b6cb0;"><strong>GIÁ BÁN SAU CHIẾT KHẤU</strong></td><td class="text-right" style="color:#2b6cb0; font-size:16px" id="res-gia-sau-ck"></td></tr>
                 <tr><td class="text-left">Doanh thu bán phòng trong 24 tháng</td><td class="text-right" id="res-dt"></td></tr>
-                <tr class="bg-yellow"><td class="text-left"><strong style="color:#c53030; font-size:16px">TỶ LỆ THU HỒI VỐN (ROI) 24 THÁNG</strong><br><span style="font-size:11px; font-weight:normal; color:#666">(Tính trên Giá bán sau chiết khấu)</span></td><td class="text-right text-red" id="res-roi" style="font-size:18px"></td></tr>
+                <tr class="bg-yellow"><td class="text-left"><strong style="color:#c53030; font-size:16px">HIỆU QUẢ ĐẦU TƯ SAU 24 THÁNG</strong><br><span style="font-size:11px; font-weight:normal; color:#666">(Tính trên Giá bán sau chiết khấu)</span></td><td class="text-right text-red" id="res-roi" style="font-size:18px"></td></tr>
             </tbody>
         </table>
 
-        <button id="btn-toggle-advanced" class="btn-calc no-print" style="background:#2b6cb0; margin-top:20px;" onclick="toggleAdvancedAnalysis()">XEM BÀI TOÁN HÒA VỐN & LÃI VỐN ↓</button>
+        <button id="btn-toggle-advanced" class="btn-calc no-print" style="background:#2b6cb0; margin-top:20px;" onclick="toggleAdvancedAnalysis()">XÁC ĐỊNH THỜI ĐIỂM HÒA VỐN</button>
 
         <div id="advanced-analysis-box" class="advanced-analysis">
-            <h4>📈 PHÂN TÍCH THỜI GIAN HÒA VỐN & TĂNG GIÁ TÀI SẢN</h4>
+            <h4>📈 ĐIỂM HÒA VỐN VÀ DỰ BÁO TĂNG GIÁ</h4>
             <div class="analysis-row">
-                <span>Thời gian dự kiến thu hồi vốn 100% (Bằng tiền cho thuê):</span>
+                <span>Thời điểm dự kiến thu hồi vốn 100% (Bằng tiền cho thuê):</span>
                 <span class="analysis-val" id="res-breakeven-time">...</span>
             </div>
             <div class="analysis-row" style="margin-top: 15px; border-top: 1px dashed #cbd5e0; padding-top: 15px;">
-                <span>Dự kiến tài sản tăng giá (6%/năm từ lúc ký HĐMB đến khi hòa vốn):</span>
+                <span>Giá trị tài sản tăng trung bình 6%/năm</span>
                 <span class="analysis-val" style="color:#c53030" id="res-asset-appreciation">...</span>
             </div>
         </div>
@@ -184,7 +184,7 @@
     function calculateROI() {
         const giaNY = Number(document.getElementById('in-gia-niem-yet').value.replace(/[^0-9]/g, '')) || 0;
         const ck = Number(document.getElementById('in-tong-ck').value.replace(/[^0-9]/g, '')) || 0;
-        const giaSauCK = giaNY - ck; // CHUẨN MỚI
+        const giaSauCK = giaNY - ck; 
         
         const sMonth = parseInt(document.getElementById('in-thang-bg').value) || 11;
         const sYear = parseInt(document.getElementById('in-nam-bg').value) || 2026;
@@ -253,7 +253,6 @@
         document.getElementById('res-gia-sau-ck').innerText = fmt.format(giaSauCK);
         document.getElementById('res-dt').innerText = fmt.format(totalDT);
         
-        // CHỈNH SỬA CÔNG THỨC ROI
         let roi = 0;
         if (giaSauCK > 0) roi = (totalDT / giaSauCK) * 100;
         document.getElementById('res-roi').innerText = roi.toFixed(2).replace('.', ',') + "%";
@@ -271,44 +270,41 @@
         let monthCount = 0;
         let loopM = sMonth;
         
-        // Vòng lặp đếm số tháng đến khi tổng doanh thu >= giá sau chiết khấu
         while (currentRev < giaSauCK) {
             let season = getSeason(loopM);
             let occ = (season === 'cao') ? oCao : oThap;
             let doanhThuThang = Math.round(nTB * occ) * gPhong;
             
-            if (doanhThuThang <= 0) break; // Cứu lỗi vô hạn nếu nhập sai số
+            if (doanhThuThang <= 0) break; 
             currentRev += doanhThuThang;
             monthCount++;
             loopM++;
             if (loopM > 12) loopM = 1;
 
-            if (monthCount > 1200) break; // Khóa an toàn 100 năm
+            if (monthCount > 1200) break; 
         }
 
         if (monthCount > 1200 || currentRev < giaSauCK) {
             document.getElementById('res-breakeven-time').innerText = "> 100 năm";
             document.getElementById('res-asset-appreciation').innerText = "Không tính được";
         } else {
-            let bYears = Math.floor(monthCount / 12);
-            let bMonths = monthCount % 12;
-            document.getElementById('res-breakeven-time').innerText = `${bYears} năm ${bMonths > 0 ? 'và ' + bMonths + ' tháng' : ''}`;
-
-            // Tăng giá 6%/năm từ lúc ký HĐMB đến khi hòa vốn
-            const hdmbM = parseInt(document.getElementById('hdmb-month').value) || sMonth;
-            const hdmbY = parseInt(document.getElementById('hdmb-year').value) || sYear;
-
-            // Xác định tháng/năm lúc hòa vốn
+            // Hiển thị dạng Tháng / Năm cho điểm hòa vốn
             let endTotalM = sMonth - 1 + monthCount;
             let endY = sYear + Math.floor(endTotalM / 12);
             let endM = (endTotalM % 12) + 1;
+            document.getElementById('res-breakeven-time').innerText = `Tháng ${endM} / ${endY}`;
 
-            // Số tháng tính từ HĐMB đến khi hòa vốn
+            const hdmbM = parseInt(document.getElementById('hdmb-month').value) || sMonth;
+            const hdmbY = parseInt(document.getElementById('hdmb-year').value) || sYear;
+
             let totalMonthsAppreciation = (endY - hdmbY) * 12 + (endM - hdmbM);
             if (totalMonthsAppreciation < 0) totalMonthsAppreciation = 0;
 
             let yearsAppreciation = totalMonthsAppreciation / 12;
             let futureValue = giaSauCK * Math.pow(1.06, yearsAppreciation);
+
+            // Làm tròn kết quả tài sản đến hàng nghìn
+            futureValue = Math.round(futureValue / 1000) * 1000;
 
             document.getElementById('res-asset-appreciation').innerText = fmt.format(futureValue) + " VNĐ";
         }
@@ -330,7 +326,6 @@
             if(data.namBG) document.getElementById('in-nam-bg').value = data.namBG;
             if(data.thangChoGCN !== undefined) document.getElementById('in-thang-gcn').value = data.thangChoGCN;
 
-            // Lưu ngày HĐMB ẩn
             if(data.thangHDMB) document.getElementById('hdmb-month').value = data.thangHDMB;
             if(data.namHDMB) document.getElementById('hdmb-year').value = data.namHDMB;
         }
