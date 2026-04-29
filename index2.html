@@ -59,7 +59,7 @@
     </div>
 
     <h1>Dòng thu từ kinh doanh cho thuê</h1>
-    <h2>(Dự kiến 24 tháng đầu tiên kể từ khi thanh toán đủ 50%)</h2>
+    <h2>(Dự kiến 24 tháng đầu tiên kể từ khi bắt đầu kinh doanh)</h2>
 
     <div class="top-panels">
         <div class="data-panel" style="background-color: #f7fafc;">
@@ -67,10 +67,10 @@
             <div class="grid-2">
                 <div class="form-group"><label>Giá niêm yết (VNĐ)</label><input type="text" id="in-gia-niem-yet" class="input-readonly" readonly></div>
                 <div class="form-group"><label>Tổng chiết khấu (VNĐ)</label><input type="text" id="in-tong-ck" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Tháng đạt 50% (QSD)</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Năm đạt 50% (QSD)</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Tháng bắt đầu DT</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Năm bắt đầu DT</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Số tháng chờ nhận GCN <span style="font-weight:normal; color:#d53f8c;">(Khóa tự động theo PTTT)</span></label>
+                    <label>Số tháng liệt kê chi tiết <span style="font-weight:normal; color:#d53f8c;">(Khóa tự động tới đợt thanh toán cuối)</span></label>
                     <input type="number" id="in-thang-gcn" class="input-readonly" readonly title="Dữ liệu này được trích xuất từ Phương thức thanh toán bạn đã chọn.">
                 </div>
             </div>
@@ -157,11 +157,11 @@
 
         monthsData.forEach((item, index) => {
             if (index < gapGCN) {
-                // Trước khi nhận GCN: Tách lẻ từng tháng
+                // Trước khi thanh toán đợt cuối: Tách lẻ từng tháng
                 if (tempGroup.length > 0) { groupedData.push([...tempGroup]); tempGroup = []; }
                 groupedData.push([item]);
             } else {
-                // Sau khi nhận GCN: Bắt đầu gộp
+                // Giai đoạn sau đó: Bắt đầu gộp
                 if (tempGroup.length === 0) {
                     tempGroup.push(item);
                 } else {
@@ -185,9 +185,9 @@
                 let m = group[0];
                 totalDT += m.doanhThu;
                 
-                let note = "Khai thác trong khi chờ GCN";
+                let note = "Khai thác theo tiến độ đóng tiền";
                 if (monthsData.indexOf(m) === gapGCN - 1 && gapGCN > 0) {
-                    note = "<strong style='color:#d53f8c'>Thời điểm dự kiến nhận GCN</strong>";
+                    note = "<strong style='color:#d53f8c'>Tháng đóng đợt cuối (Nhận sổ)</strong>";
                 }
 
                 tbody.innerHTML += `<tr>
