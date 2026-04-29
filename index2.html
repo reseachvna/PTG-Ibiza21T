@@ -34,6 +34,9 @@
         
         .btn-calc { background: #d53f8c; color: white; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; display: block; margin: 0 auto 30px auto; }
         .btn-calc:hover { background: #b83280; }
+        
+        .nav-back { display: inline-block; margin-bottom: 20px; color: #3182ce; text-decoration: none; font-weight: bold; }
+        .nav-back:hover { text-decoration: underline; }
 
         .note { font-size: 12px; color: #718096; font-style: italic; text-align: left;}
     </style>
@@ -41,11 +44,13 @@
 <body>
 
 <div class="container">
+    <a href="index1.html" class="nav-back">← Quay lại Bảng tính giá</a>
+
     <h1>Dòng thu từ kinh doanh cho thuê</h1>
     <h2 style="font-size: 16px; color: #4a5568; margin-bottom: 30px;">(Tạm tính trong thời gian 24 tháng kể từ ngày nhận bàn giao QSD)</h2>
 
     <div class="mock-data-box">
-        <h3>🔗 Dữ liệu liên kết (Mô phỏng lấy từ Index 1 sang)</h3>
+        <h3>🔗 Dữ liệu liên kết (Được chuyển tự động từ bảng tính giá)</h3>
         <div class="grid-4">
             <div class="form-group">
                 <label>Giá niêm yết (VNĐ)</label>
@@ -125,7 +130,7 @@
                 <td class="text-right" id="out-gia-niem-yet">0</td>
             </tr>
             <tr style="background-color: #f7fafc;">
-                <td class="text-left" style="font-style: italic;">Tổng các khoản chiết khấu (Từ Index 1)</td>
+                <td class="text-left" style="font-style: italic;">Tổng các khoản chiết khấu (Từ bảng tính giá)</td>
                 <td class="text-right" id="out-tong-ck">0</td>
             </tr>
             <tr>
@@ -149,14 +154,12 @@
         return new Intl.NumberFormat('vi-VN').format(Math.round(num));
     }
 
-    // Hàm xác định mùa: Tháng 11,12,1,2 là Thấp điểm. Tháng 3->10 là Cao điểm.
     function getSeason(month) {
         if (month >= 3 && month <= 10) return 'cao';
         return 'thap';
     }
 
     function calculateROI() {
-        // 1. Lấy dữ liệu đầu vào
         const giaNiemYet = parseFloat(document.getElementById('in-gia-niem-yet').value) || 0;
         const tongCK = parseFloat(document.getElementById('in-tong-ck').value) || 0;
         const startMonth = parseInt(document.getElementById('in-thang-bg').value) || 11;
@@ -167,7 +170,6 @@
         const occCao = (parseFloat(document.getElementById('in-occ-cao').value) || 0) / 100;
         const ngayTB = parseInt(document.getElementById('in-ngay-tb').value) || 30;
 
-        // 2. Tạo mảng 24 tháng
         let monthsData = [];
         let currentMonth = startMonth;
         let currentYear = startYear;
@@ -186,7 +188,6 @@
                 doanhThu: doanhThu
             });
 
-            // Tăng tháng
             currentMonth++;
             if (currentMonth > 12) {
                 currentMonth = 1;
@@ -194,8 +195,6 @@
             }
         }
 
-        // 3. Thuật toán Gom nhóm (Group) các tháng liên tiếp cùng mùa
-        // Để hiển thị giống mẫu: Ta gom nhóm nếu chuỗi đó có >= 2 tháng liên tiếp giống nhau về "soDem"
         let groupedData = [];
         let tempGroup = [];
 
@@ -204,7 +203,6 @@
                 tempGroup.push(item);
             } else {
                 let lastItem = tempGroup[tempGroup.length - 1];
-                // Nếu cùng season/số đêm thì cho vào chung 1 nhóm
                 if (item.soDem === lastItem.soDem) {
                     tempGroup.push(item);
                 } else {
@@ -212,23 +210,20 @@
                     tempGroup = [item];
                 }
             }
-            // Add nhóm cuối cùng
             if (index === monthsData.length - 1) {
                 groupedData.push([...tempGroup]);
             }
         });
 
-        // 4. Render Bảng dòng tiền
         const tbody = document.getElementById('tbody-cashflow');
         tbody.innerHTML = '';
         let totalDoanhThu24T = 0;
 
         groupedData.forEach((group, index) => {
             let rowHtml = '';
-            let isLastMonth = (index === groupedData.length - 1 && group.length === 1); // Check nếu là dòng cuối cùng của 24 tháng
+            let isLastMonth = (index === groupedData.length - 1 && group.length === 1); 
 
             if (group.length === 1) {
-                // Nhóm chỉ có 1 tháng (Hoặc cố tình in lẻ)
                 let m = group[0];
                 totalDoanhThu24T += m.doanhThu;
                 let ghiChu = isLastMonth ? 'Kết thúc 24 tháng được miễn phí Phi dịch vụ' : '';
@@ -241,7 +236,6 @@
                     <td class="note">${ghiChu}</td>
                 </tr>`;
             } else {
-                // Nhóm có nhiều tháng (Gộp lại)
                 let firstM = group[0];
                 let lastM = group[group.length - 1];
                 let numMonths = group.length;
@@ -261,10 +255,8 @@
             tbody.innerHTML += rowHtml;
         });
 
-        // Cập nhật Tổng doanh thu bảng 1
         document.getElementById('out-tong-doanh-thu').innerText = formatMoney(totalDoanhThu24T);
 
-        // 5. Tính toán và Render Bảng ROI (Bảng 2)
         document.getElementById('out-gia-niem-yet').innerText = formatMoney(giaNiemYet);
         document.getElementById('out-tong-ck').innerText = formatMoney(tongCK);
         document.getElementById('out-dt-24t').innerText = formatMoney(totalDoanhThu24T);
@@ -277,15 +269,22 @@
             roi = (tongLoiIch / giaNiemYet) * 100;
         }
         
-        // Format ROI 2 chữ số thập phân (VD: 70,08%)
         document.getElementById('out-roi').innerText = roi.toFixed(2).replace('.', ',') + '%';
     }
 
-    // Tự động tính toán ngay khi tải trang xong
     window.onload = function() {
+        // Tự động kéo dữ liệu từ Index 1 (nếu có)
+        const savedData = localStorage.getItem('dataStep1');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            document.getElementById('in-gia-niem-yet').value = data.giaNiemYet;
+            document.getElementById('in-tong-ck').value = data.tongChietKhau;
+            document.getElementById('in-thang-bg').value = data.thangBG;
+            document.getElementById('in-nam-bg').value = data.namBG;
+        }
+
         calculateROI();
         
-        // Bắt sự kiện thay đổi input để tự động tính lại mà không cần bấm nút
         const inputs = document.querySelectorAll('input[type="number"]');
         inputs.forEach(input => {
             input.addEventListener('input', calculateROI);
