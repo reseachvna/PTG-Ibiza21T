@@ -63,17 +63,32 @@
         
         .handover-note { color: #d53f8c; font-weight: bold; display: block; margin-top: 4px; font-style: italic; }
 
+        .copyright-footer { text-align: right; margin-top: 20px; border-top: 1px dashed #cbd5e0; padding-top: 10px; font-size: 12px; color: #a0aec0; font-style: italic; }
+        .copyright-footer strong { color: #4a5568; font-weight: bold; font-style: normal;}
+
+        /* CSS ÉP TRANG A4 VÀ MOBILE */
+        @page { size: A4 portrait; margin: 10mm 10mm; }
+        
         @media print {
             .no-print { display: none !important; }
+            body { font-size: 12px; line-height: 1.4; color: #000; background: #fff; }
             .container { box-shadow: none; padding: 0; margin: 0; width: 100%; max-width: 100%; }
-            #result-box { display: block !important; }
-            #print-title-area { display: block !important; }
+            #result-box { display: block !important; margin-top: 0; padding-top: 0; border: none; }
+            #print-title-area { display: block !important; margin-bottom: 15px; }
+            h1 { font-size: 20px; margin-bottom: 2px; }
+            h2 { font-size: 15px; margin-bottom: 15px; }
+            .result-header { font-size: 16px; margin-bottom: 10px; }
+            .info-grid-2col { gap: 15px; margin-bottom: 15px; }
+            .info-item { padding-bottom: 2px; }
+            .price-highlight { padding: 10px 15px; margin-bottom: 15px; border-color: #ccc; background: transparent; }
+            .final-price-container { padding: 8px 10px; margin-top: 10px; border-top: 1px solid #ccc; background: transparent; }
+            .final-price-label, .final-price { font-size: 16px; }
+            table.schedule-table { margin-top: 10px; }
+            .schedule-table th, .schedule-table td { padding: 6px; font-size: 12px; border-color: #999; color: #000; }
             tr { page-break-inside: avoid; }
+            .copyright-footer { color: #666; border-top: 1px solid #999; margin-top: 10px; padding-top: 5px; }
         }
 
-        /* --- CHỈ THÊM CSS MỚI Ở ĐÂY CHO MOBILE & PDF --- */
-        @page { size: A4 portrait; margin: 15mm 10mm; }
-        
         @media screen and (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 20px; margin: 0; }
@@ -87,7 +102,6 @@
             .action-buttons button { width: 100%; justify-content: center; }
             .final-price-container { flex-direction: column; text-align: center; gap: 10px; }
             .info-item { flex-direction: column; align-items: flex-start; gap: 5px; }
-            /* Gắn scroll dọc ngang cho các bảng nếu bị tràn màn hình */
             .custom-table, .schedule-table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;}
         }
     </style>
@@ -227,8 +241,12 @@
         <h3 style="color: #1a365d; margin-bottom: 10px; font-size: 18px;">TIẾN ĐỘ THANH TOÁN CHI TIẾT</h3>
         <div id="schedule-content"></div>
 
-        <div style="margin-top: 30px; text-align: right; font-style: italic; color: #666; font-size: 13px;">
+        <div style="margin-top: 15px; text-align: right; font-style: italic; color: #666; font-size: 13px;">
             Ngày xuất phiếu: <span id="current-print-date"></span>
+        </div>
+
+        <div class="copyright-footer">
+            © Developed by <strong>DMD – R&D FLV</strong>
         </div>
     </div>
 </div>
@@ -344,7 +362,6 @@
         let breakdown = "";
 
         if (mode === 'auto') {
-            // 1. CK Phương thức thanh toán
             let planRate = 0;
             let planText = "";
             if (plan === '12') { planRate = 0.075; planText = "Thanh toán 12 tháng (7.5%)"; }
@@ -356,7 +373,6 @@
                 currentPrice -= disc;
             }
 
-            // 2. CK Bổ sung (Lũy kế nhiều dòng)
             if (document.getElementById('enable-extra').checked) {
                 const rows = document.querySelectorAll('#extra-body tr');
                 rows.forEach((row, index) => {
@@ -379,7 +395,6 @@
                 });
             }
         } else {
-            // Chế độ tùy chỉnh
             const names = document.querySelectorAll('.c-name');
             const rates = document.querySelectorAll('.c-rate');
             names.forEach((n, idx) => {
