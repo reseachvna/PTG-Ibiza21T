@@ -35,7 +35,7 @@
         .btn-main { background: #d53f8c; color: white; border: none; padding: 18px 40px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
         .btn-main:hover { background: #b83280; transform: translateY(-2px); }
 
-        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 0px; display: inline-flex; align-items: center; gap: 8px; }
         
         #result-box { display: none; margin-top: 40px; padding-top: 30px; border-top: 2px solid #edf2f7; text-align: left; }
         .result-header { color: #1a365d; margin: 0; font-size: 22px; }
@@ -75,7 +75,7 @@
 
 <div class="container">
     <div style="text-align: center;" class="no-print">
-        <h1>Bảng tính giá & Tiến độ thanh toán</h1>
+        <h1>Bảng tính giá & Tiến độ thanh toán (tạm tính)</h1>
         <h2>Flamingo Ibiza Party Resort</h2>
         <div id="data-status">⏳ Đang tải dữ liệu sản phẩm...</div>
     </div>
@@ -176,7 +176,7 @@
         <div class="print-header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 class="result-header">CHI TIẾT PHIẾU TÍNH GIÁ</h3>
             <div class="action-buttons no-print" style="display: flex; gap: 10px;">
-                <button class="btn-print" onclick="inPhieu()" style="margin-bottom: 0;">TẢI PDF / IN PHIẾU</button>
+                <button class="btn-print" onclick="inPhieu()">TẢI PDF / IN PHIẾU</button>
                 <button id="btn-goto-index2" style="background: #2b6cb0; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: none;" onclick="transferToIndex2()">DÒNG THU BÁN PHÒNG & ROI →</button>
             </div>
         </div>
@@ -441,7 +441,7 @@
         steps.forEach((s, i) => {
             cumulativePercent += (s.p * 100);
             let amt = Math.round((finalPrice * s.p) / 1000) * 1000;
-            let note = (i === 0) ? `<br><small>(Đã cọc. Nộp thêm: ${formatMoney(amt - deposit)})</small>` : "";
+            let note = (i === 0) ? `<br><small>(Đã cọc. Khách hàng nộp thêm: ${formatMoney(amt - deposit)})</small>` : "";
             
             let handoverNote = "";
             if (cumulativePercent >= 50 && (cumulativePercent - (s.p * 100)) < 50) {
@@ -460,30 +460,34 @@
         setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
     }
 
-    // ĐÂY LÀ HÀM DUY NHẤT ĐƯỢC CHÈN THÊM VÀO CUỐI FILE CỦA BẠN ĐỂ GÓI DỮ LIỆU CHUYỂN TRANG
+    // === HÀM TRUYỀN DỮ LIỆU ĐƯỢC CHÈN THÊM VÀO CUỐI ===
     function transferToIndex2() {
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
         const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText);
         
         const plan = document.getElementById('payment-plan').value;
         const depositDateStr = document.getElementById('deposit-date').value;
-        let d = new Date(depositDateStr);
-        let gap = 6; // Mặc định số tháng chờ từ lúc nhận nhà đến khi nhận GCN
+        let d = new Date();
+        if (depositDateStr) { d = new Date(depositDateStr); }
         
+        let gap = 6; 
         if (plan === '30') {
-            d.setDate(d.getDate() + 30); // 30 ngày nhận bàn giao
+            d.setDate(d.getDate() + 30); 
             gap = 1;
         } else if (plan === '12') {
-            d.setDate(d.getDate() + 360); // Theo lịch của bạn là 360 ngày nhận bàn giao
+            d.setDate(d.getDate() + 360); 
             gap = 6;
         } else {
-            d.setDate(d.getDate() + 1080); // Theo lịch của bạn là 1080 ngày (36 tháng)
+            d.setDate(d.getDate() + 1080); 
             gap = 6;
         }
         
+        const calcCK = originalPrice - finalPrice; // Tính ra giá trị thật
+
         const data = {
             giaNiemYet: originalPrice,
-            tongChietKhau: originalPrice - finalPrice,
+            tongChietKhau: calcCK, // Dùng biến mới
+            tongCK: calcCK,        // Backup cả biến cũ để chắc chắn không bị miss
             thangBG: d.getMonth() + 1,
             namBG: d.getFullYear(),
             thangChoGCN: gap
