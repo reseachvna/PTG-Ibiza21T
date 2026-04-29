@@ -148,7 +148,7 @@
                 <span class="analysis-val" id="res-breakeven-time">...</span>
             </div>
             <div class="analysis-row" style="margin-top: 15px; border-top: 1px dashed #cbd5e0; padding-top: 15px;">
-                <span>Giá trị tài sản tăng trung bình 6%/năm</span>
+                <span>Giá trị tài sản tại thời điểm hòa vốn (dự kiến tăng trung bình 5%/năm)</span>
                 <span class="analysis-val" style="color:#c53030" id="res-asset-appreciation">...</span>
             </div>
         </div>
@@ -292,7 +292,7 @@
             let endTotalM = sMonth - 1 + monthCount;
             let endY = sYear + Math.floor(endTotalM / 12);
             let endM = (endTotalM % 12) + 1;
-            document.getElementById('res-breakeven-time').innerText = `Tháng ${endM} / ${endY}`;
+            document.getElementById('res-breakeven-time').innerText = `Tháng ${endM}/${endY}`;
 
             const hdmbM = parseInt(document.getElementById('hdmb-month').value) || sMonth;
             const hdmbY = parseInt(document.getElementById('hdmb-year').value) || sYear;
