@@ -500,7 +500,6 @@
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
         const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText);
         
-        // Lấy thêm Tên Khách Hàng và Mã Căn để mang sang bảng sau
         const khachHang = document.getElementById('out-name').innerText;
         const maCan = document.getElementById('out-code').innerText;
         
@@ -544,7 +543,10 @@
             tongCK: calcCK,
             thangBG: revStartDate.getMonth() + 1, 
             namBG: revStartDate.getFullYear(),
-            thangChoGCN: gap 
+            thangChoGCN: gap,
+            // NEW: Bổ sung lưu ngày HĐMB để Index 2 tính tăng giá vốn
+            thangHDMB: hdmbDate.getMonth() + 1,
+            namHDMB: hdmbDate.getFullYear()
         };
         
         localStorage.setItem('dataStep1', JSON.stringify(data));
