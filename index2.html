@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Tính Dòng Tiền & ROI</title>
+    <title>Bảng tính dòng tiền kinh doanh và hiệu quả đầu tư</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; line-height: 1.4; margin: 0; padding: 20px;}
         .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -83,20 +83,20 @@
 
     <div class="top-panels">
         <div class="data-panel" style="background-color: #f7fafc;">
-            <h3>🔗 Dữ liệu liên kết (Đồng bộ từ PTTT)</h3>
+            <h3>🔗 Dữ liệu liên kết (Đồng bộ từ PTG)</h3>
             <div class="grid-2">
                 <div class="form-group"><label>Giá niêm yết (VNĐ)</label><input type="text" id="in-gia-niem-yet" class="input-readonly" readonly></div>
                 <div class="form-group"><label>Tổng chiết khấu (VNĐ)</label><input type="text" id="in-tong-ck" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Tháng bắt đầu DT</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Năm bắt đầu DT</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Tháng bắt đầu</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Năm bắt đầu</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Số tháng liệt kê chi tiết <span style="font-weight:normal; color:#d53f8c;">(Khóa tự động tới đợt thanh toán cuối)</span></label>
+                    <label>Số tháng cho thuê theo tiến độ đóng tiền <span style="font-weight:normal; color:#d53f8c;">(Khóa tự động tới đợt thanh toán cuối)</span></label>
                     <input type="number" id="in-thang-gcn" class="input-readonly" readonly title="Dữ liệu này được trích xuất từ Phương thức thanh toán bạn đã chọn.">
                 </div>
             </div>
         </div>
         <div class="data-panel">
-            <h3>📊 Thông số giả định (Nhập tay)</h3>
+            <h3>📊 Thông số từ kinh doanh cho thuê</h3>
             <div class="grid-2">
                 <div class="form-group"><label>Giá phòng/đêm (VNĐ)</label><input type="number" id="in-gia-phong" value="2000000"></div>
                 <div class="form-group"><label>Số đêm TB/tháng</label><input type="number" id="in-ngay-tb" value="30"></div>
@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <button class="btn-calc no-print" onclick="showResults()">TÍNH DÒNG THU BÁN PHÒNG & ROI</button>
+    <button class="btn-calc no-print" onclick="showResults()">TÍNH DÒNG THU KINH DOANH</button>
 
     <div id="result-area">
         <table id="table-cashflow">
@@ -115,7 +115,7 @@
             <tfoot><tr class="bg-yellow"><td colspan="2" class="text-right">Tổng số doanh thu bán phòng 24 tháng:</td><td class="text-right text-red" id="out-total-dt"></td><td></td></tr></tfoot>
         </table>
         
-        <h3 style="text-align:center; color:#1a365d; margin: 15px 0 10px 0; font-size: 16px;">TỔNG KẾT HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
+        <h3 style="text-align:center; color:#1a365d; margin: 15px 0 10px 0; font-size: 16px;">HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
         <table>
             <tbody>
                 <tr><td class="text-left"><strong>Giá niêm yết Căn hộ (đã bao gồm VAT)</strong></td><td class="text-right" id="res-gia-ny"></td></tr>
@@ -205,7 +205,7 @@
                 
                 let note = "Khai thác theo tiến độ đóng tiền";
                 if (monthsData.indexOf(m) === gapGCN - 1 && gapGCN > 0) {
-                    note = "<strong style='color:#d53f8c'>Tháng đóng đợt cuối (Nhận sổ)</strong>";
+                    note = "<strong style='color:#d53f8c'>Tháng đóng đợt cuối (Nhận GCN)</strong>";
                 }
 
                 tbody.innerHTML += `<tr>
