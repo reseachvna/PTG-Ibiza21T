@@ -241,7 +241,7 @@
         <h3 style="color: #1a365d; margin-bottom: 10px; font-size: 18px;">TIẾN ĐỘ THANH TOÁN CHI TIẾT</h3>
         <div id="schedule-content"></div>
 
-        <div style="margin-top: 15px; text-align: right; font-style: italic; color: #666; font-size: 13px;">
+        <div style="margin-top: 30px; text-align: right; font-style: italic; color: #666; font-size: 13px;">
             Ngày xuất phiếu: <span id="current-print-date"></span>
         </div>
 
@@ -500,6 +500,10 @@
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
         const finalPrice = cleanAndParsePrice(document.getElementById('out-price-final').innerText);
         
+        // Lấy thêm Tên Khách Hàng và Mã Căn để mang sang bảng sau
+        const khachHang = document.getElementById('out-name').innerText;
+        const maCan = document.getElementById('out-code').innerText;
+        
         const plan = document.getElementById('payment-plan').value;
         const depositDateStr = document.getElementById('deposit-date').value;
         let depDate = new Date();
@@ -533,6 +537,8 @@
         const calcCK = originalPrice - finalPrice;
 
         const data = {
+            khachHang: khachHang,
+            maCan: maCan,
             giaNiemYet: originalPrice,
             tongChietKhau: calcCK,
             tongCK: calcCK,
