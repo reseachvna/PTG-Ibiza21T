@@ -6,11 +6,16 @@
     <title>Phiếu Tính Giá Flamingo Ibiza Party Resort</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; margin: 0; padding: 20px;}
-        .container { max-width: 1200px; margin: 10px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { max-width: 1200px; margin: 10px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative;}
         h1 { color: #1a365d; text-transform: uppercase; margin-bottom: 5px; font-size: 26px; text-align: center;}
         h2 { color: #d53f8c; font-weight: bold; margin-top: 0; margin-bottom: 30px; font-size: 20px; text-align: center;}
         
         #data-status { font-weight: bold; margin-bottom: 25px; padding: 10px; border-radius: 6px; display: inline-block; background: #f1f5f9; text-align: center;}
+
+        /* CSS Modal Đăng nhập Sales */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(5px);}
+        .modal-content { background: #fff; padding: 35px 30px; border-radius: 12px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .sale-greeting-box { text-align: right; margin-bottom: 10px; font-size: 14px; color: #4a5568; }
 
         .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: left; margin-bottom: 30px; }
         .form-group { display: flex; flex-direction: column; }
@@ -72,7 +77,7 @@
         @media print {
             .no-print { display: none !important; }
             body { font-size: 12px; line-height: 1.4; color: #000; background: #fff; }
-            .container { box-shadow: none; padding: 0; margin: 0; width: 100%; max-width: 100%; }
+            .container { box-shadow: none; padding: 0; margin: 0; width: 100%; max-width: 100%; border: none;}
             #result-box { display: block !important; margin-top: 0; padding-top: 0; border: none; }
             #print-title-area { display: block !important; margin-bottom: 15px; }
             h1 { font-size: 20px; margin-bottom: 2px; }
@@ -98,7 +103,7 @@
             .info-grid-2col { grid-template-columns: 1fr; gap: 15px; }
             .mode-selector { flex-direction: column; gap: 15px; }
             .print-header-actions { flex-direction: column; align-items: stretch; gap: 15px; text-align: center; }
-            .action-buttons { flex-direction: column; }
+            .action-buttons { flex-direction: column; display: flex; gap: 10px;}
             .action-buttons button { width: 100%; justify-content: center; }
             .final-price-container { flex-direction: column; text-align: center; gap: 10px; }
             .info-item { flex-direction: column; align-items: flex-start; gap: 5px; }
@@ -108,7 +113,33 @@
 </head>
 <body>
 
+<div id="sales-modal" class="modal-overlay no-print">
+    <div class="modal-content">
+        <h3 style="color:#1a365d; margin-top:0; font-size: 20px;">ĐĂNG NHẬP HỆ THỐNG</h3>
+        <p style="font-size:14px; color:#666; margin-bottom: 25px;">Vui lòng nhập đúng thông tin để ghi nhận báo giá.</p>
+        
+        <div class="form-group" style="margin-bottom: 15px; text-align:left;">
+            <label>Tên chuyên viên tư vấn (*)</label>
+            <input type="text" id="sale-name" placeholder="Ví dụ: Nguyễn Văn A">
+            <span style="font-size: 11px; color: #e53e3e; margin-top: 4px; font-style: italic;">* Yêu cầu nhập tên thật (Không dùng số).</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 25px; text-align:left;">
+            <label>Số điện thoại / Mã NV (*)</label>
+            <input type="text" id="sale-phone" placeholder="Ví dụ: 0987654321">
+            <span style="font-size: 11px; color: #e53e3e; margin-top: 4px; font-style: italic;">* Viết liền không dấu (Độ dài 4-15 ký tự).</span>
+        </div>
+        
+        <button class="btn-main" style="margin-top:0;" onclick="saveSalesInfo()">XÁC NHẬN BẮT ĐẦU</button>
+    </div>
+</div>
+
 <div class="container">
+    
+    <div id="sale-greeting" class="sale-greeting-box no-print" style="display:none;">
+        👤 Đang tư vấn bởi: <strong id="current-sale-name" style="color:#1a365d;">...</strong> 
+        <a href="#" onclick="logoutSales(); return false;" style="color:#e53e3e; text-decoration:none; margin-left: 10px; font-size: 13px;">(Đăng xuất)</a>
+    </div>
+
     <div style="text-align: center;" class="no-print">
         <h1>Bảng tính giá & Tiến độ thanh toán</h1>
         <h2>Flamingo Ibiza Party Resort</h2>
@@ -254,6 +285,51 @@
 <script>
     let masterData = [];
 
+    // ===== LOGIC KIỂM TRA ĐĂNG NHẬP SALES =====
+    function checkSalesLogin() {
+        const saleInfo = localStorage.getItem('saleInfo');
+        if (!saleInfo) {
+            document.getElementById('sales-modal').style.display = 'flex';
+            document.getElementById('sale-greeting').style.display = 'none';
+        } else {
+            const info = JSON.parse(saleInfo);
+            document.getElementById('current-sale-name').innerText = info.name;
+            document.getElementById('sales-modal').style.display = 'none';
+            document.getElementById('sale-greeting').style.display = 'block';
+        }
+    }
+
+    function saveSalesInfo() {
+        const name = document.getElementById('sale-name').value.trim();
+        const phone = document.getElementById('sale-phone').value.trim();
+        
+        if (!name || !phone) {
+            return alert("⚠️ Vui lòng nhập đầy đủ Tên và Số điện thoại/Mã NV!");
+        }
+
+        const nameRegex = /^[\p{L}\s]+$/u;
+        if (!nameRegex.test(name) || name.length < 2) {
+            return alert("⚠️ TÊN KHÔNG HỢP LỆ!\nVui lòng nhập đúng Họ và Tên (Không dùng số hoặc ký tự đặc biệt).");
+        }
+
+        const phoneRegex = /^[a-zA-Z0-9]+$/;
+        if (!phoneRegex.test(phone) || phone.length < 4 || phone.length > 15) {
+            return alert("⚠️ SĐT / MÃ NV KHÔNG HỢP LỆ!\nVui lòng viết liền không dấu, độ dài từ 4-15 ký tự (Ví dụ: 0987654321 hoặc NV123).");
+        }
+
+        localStorage.setItem('saleInfo', JSON.stringify({ name: name, phone: phone }));
+        checkSalesLogin();
+    }
+
+    function logoutSales() {
+        if(confirm("Bạn có chắc chắn muốn thoát tài khoản này?")) {
+            localStorage.removeItem('saleInfo');
+            document.getElementById('sale-name').value = '';
+            document.getElementById('sale-phone').value = '';
+            checkSalesLogin();
+        }
+    }
+
     function cleanAndParsePrice(val) {
         if (!val) return 0;
         let cleanVal = String(val).replace(/\s+/g, '').replace(/[^0-9]/g, '');
@@ -261,6 +337,8 @@
     }
 
     function initApp() {
+        checkSalesLogin();
+
         const statusEl = document.getElementById('data-status');
         document.getElementById('deposit-date').valueAsDate = new Date();
         document.getElementById('current-print-date').innerText = getFormattedDate(new Date());
@@ -273,7 +351,7 @@
                 statusEl.style.color = "green";
             })
             .catch(err => {
-                statusEl.innerHTML = "🔴 Lỗi: Không tìm thấy Data.json!";
+                statusEl.innerHTML = "🔴 Lỗi: Không tìm thấy Data.json! Vui lòng đẩy file lên GitHub.";
                 statusEl.style.color = "red";
             });
     }
@@ -348,6 +426,7 @@
     function calculate() {
         const codeInput = document.getElementById('apt-code').value.toUpperCase().trim();
         const depositDate = document.getElementById('deposit-date').value;
+        const khachHang = document.getElementById('fullname').value || "Khách hàng";
         
         if (masterData.length === 0) return alert("Hệ thống chưa tải dữ liệu!");
         
@@ -410,7 +489,7 @@
         if (breakdown === "") breakdown = "<i>Không có chiết khấu áp dụng</i>";
         currentPrice = Math.round(currentPrice / 1000) * 1000;
 
-        document.getElementById('out-name').innerText = document.getElementById('fullname').value || "Khách hàng";
+        document.getElementById('out-name').innerText = khachHang;
         document.getElementById('out-code').innerText = apt.ma_can || apt.Ma_can;
         document.getElementById('out-type').innerText = apt.Type || "N/A";
         document.getElementById('out-area').innerText = apt.Dien_tich || "0";
@@ -422,6 +501,9 @@
         document.getElementById('result-box').style.display = 'block';
         document.getElementById('btn-goto-index2').style.display = 'inline-block';
         window.scrollTo({ top: document.getElementById('result-box').offsetTop, behavior: 'smooth' });
+
+        // GỬI DỮ LIỆU VỀ GOOGLE SHEETS
+        sendDataToSheet(khachHang, apt.ma_can || apt.Ma_can, originalPrice, originalPrice - currentPrice, currentPrice);
     }
 
     function renderSchedule(plan, finalPrice, depositDateStr) {
@@ -490,6 +572,39 @@
         container.innerHTML = html;
     }
 
+    // ==== HÀM GỬI DỮ LIỆU LÊN GOOGLE SHEET (DỰ ÁN IBIZA) ====
+    function sendDataToSheet(khachHang, maCan, giaNY, tongCK, giaSauCK) {
+        const saleInfoStr = localStorage.getItem('saleInfo');
+        let saleName = "Chưa khai báo";
+        let salePhone = "Chưa khai báo";
+        
+        if (saleInfoStr) {
+            const info = JSON.parse(saleInfoStr);
+            saleName = info.name;
+            salePhone = info.phone;
+        }
+
+        const payload = {
+            saleName: saleName,
+            salePhone: salePhone,
+            khachHang: khachHang,
+            maCan: maCan,
+            giaNiemYet: giaNY,
+            tongChietKhau: tongCK,
+            giaSauCK: giaSauCK
+        };
+
+        // Gửi ngầm không làm đơ giao diện
+        fetch("https://script.google.com/macros/s/AKfycbz_Ww44o5i6dmzKZjv55pVrFa9hREGtLYgn8CqF0fbGb4E1DkBt-XB0LwVVexrhgnyLgA/exec", {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify(payload)
+        }).catch(err => console.log("Lưu log sheet thất bại:", err));
+    }
+
     function inPhieu() {
         document.getElementById('print-title-area').style.display = 'block';
         window.print();
@@ -544,7 +659,6 @@
             thangBG: revStartDate.getMonth() + 1, 
             namBG: revStartDate.getFullYear(),
             thangChoGCN: gap,
-            // NEW: Bổ sung lưu ngày HĐMB để Index 2 tính tăng giá vốn
             thangHDMB: hdmbDate.getMonth() + 1,
             namHDMB: hdmbDate.getFullYear()
         };
