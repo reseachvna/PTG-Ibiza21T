@@ -3,31 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng tính dòng tiền và hiệu quả đầu tư (tạm tính)</title>
+    <title>Bảng tính dòng tiền dự kiến và Hiệu quả đầu tư</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; line-height: 1.5; margin: 0; padding: 20px;}
-        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1, h2 { color: #1a365d; text-align: center; margin-bottom: 10px; }
-        h1 { font-size: 24px; text-transform: uppercase; }
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .nav-back { color: #3182ce; text-decoration: none; font-weight: bold; padding: 8px 15px; border-radius: 4px; background: #ebf8ff; border: 1px solid #bee3f8;}
-        .btn-print { background: #38a169; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .top-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .data-panel { border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; background: #fff; }
-        .data-panel h3 { margin-top: 0; color: #1a365d; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;}
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 5px;}
-        .form-group label { font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #4a5568; }
-        .form-group input { padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 15px; outline: none; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;}
-        th, td { border: 1px solid #cbd5e0; padding: 12px; text-align: center; }
-        th { background: #f7fafc; }
+        /* Tinh chỉnh UI gọn gàng hơn */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; line-height: 1.4; margin: 0; padding: 20px;}
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { color: #1a365d; text-align: center; margin: 0 0 5px 0; font-size: 22px; text-transform: uppercase; }
+        h2 { color: #4a5568; text-align: center; margin: 0 0 20px 0; font-size: 15px; font-weight: normal; }
+        
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .nav-back { color: #3182ce; text-decoration: none; font-weight: bold; padding: 6px 12px; border-radius: 4px; background: #ebf8ff; border: 1px solid #bee3f8; font-size: 14px;}
+        .btn-print { background: #38a169; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        
+        .top-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .data-panel { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background: #fff; }
+        .data-panel h3 { margin-top: 0; color: #1a365d; font-size: 14px; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 10px;}
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 15px; }
+        
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: bold; font-size: 12px; margin-bottom: 4px; color: #4a5568; }
+        .form-group input { padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 14px; outline: none; font-weight: bold; color: #2d3748;}
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;}
+        th, td { border: 1px solid #cbd5e0; padding: 8px 10px; text-align: center; }
+        th { background: #f7fafc; color: #1a365d;}
+        .text-left { text-align: left; }
         .text-right { text-align: right; font-weight: bold; }
         .bg-yellow { background-color: #fffff0; }
         .text-red { color: #e53e3e; font-weight: bold; }
-        .btn-calc { background: #d53f8c; color: white; border: none; padding: 15px 40px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; display: block; margin: 0 auto 30px auto; }
+        
+        .btn-calc { background: #d53f8c; color: white; border: none; padding: 10px 30px; font-size: 15px; font-weight: bold; border-radius: 30px; cursor: pointer; display: block; margin: 0 auto 20px auto; }
         #result-area { display: none; } 
-        @media print { .no-print { display: none !important; } .container { box-shadow: none; padding: 0; border: none;} input { border: none !important; } }
+        
+        /* CĂN CHỈNH BẢN QUYỀN TRANG */
+        .copyright-footer { text-align: right; margin-top: 20px; border-top: 1px dashed #cbd5e0; padding-top: 10px; font-size: 12px; color: #a0aec0; font-style: italic; }
+        .copyright-footer strong { color: #4a5568; font-weight: bold; font-style: normal;}
+
+        /* TỐI ƯU GIAO DIỆN KHI IN / XUẤT PDF */
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: #fff; padding: 0; }
+            .container { box-shadow: none; padding: 0; border: none; max-width: 100%; } 
+            .top-panels { gap: 15px; margin-bottom: 15px; }
+            .data-panel { padding: 10px; border: 1px solid #ccc; background-color: #fff !important;}
+            /* Chuyển ô nhập liệu thành text thường khi in */
+            .form-group input { border: none !important; padding: 0; background: transparent; color: #000;}
+            table { margin-bottom: 15px; }
+            th, td { padding: 6px 8px; color: #000; border-color: #999;}
+            /* Làm đậm bản quyền khi in */
+            .copyright-footer { color: #666; border-top: 1px solid #999; }
+        }
     </style>
 </head>
 <body>
@@ -49,7 +74,7 @@
                 <div class="form-group"><label>Tháng nhận Bàn giao</label><input type="number" id="in-thang-bg"></div>
                 <div class="form-group"><label>Năm nhận Bàn giao</label><input type="number" id="in-nam-bg"></div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Số tháng chờ nhận GCN <br><span style="font-size:11px; font-weight:normal">(Giai đoạn chờ sổ sẽ được in chi tiết từng tháng)</span></label>
+                    <label>Số tháng chờ nhận GCN <span style="font-weight:normal">(Giai đoạn chờ sổ in chi tiết từng tháng)</span></label>
                     <input type="number" id="in-thang-gcn" value="6">
                 </div>
             </div>
@@ -59,8 +84,8 @@
             <div class="grid-2">
                 <div class="form-group"><label>Giá phòng/đêm (VNĐ)</label><input type="number" id="in-gia-phong" value="2000000"></div>
                 <div class="form-group"><label>Số đêm TB/tháng</label><input type="number" id="in-ngay-tb" value="30"></div>
-                <div class="form-group"><label>OCC Thấp điểm (%)</label><input type="number" id="in-occ-thap" value="40"></div>
-                <div class="form-group"><label>OCC Cao điểm (%)</label><input type="number" id="in-occ-cao" value="80"></div>
+                <div class="form-group"><label>OCC Thấp điểm (%) <span style="font-weight:normal">(Th.11-Th.2)</span></label><input type="number" id="in-occ-thap" value="40"></div>
+                <div class="form-group"><label>OCC Cao điểm (%) <span style="font-weight:normal">(Th.3-Th.10)</span></label><input type="number" id="in-occ-cao" value="80"></div>
             </div>
         </div>
     </div>
@@ -69,20 +94,24 @@
 
     <div id="result-area">
         <table id="table-cashflow">
-            <thead><tr><th>Thời gian</th><th>Số đêm theo OCC</th><th>Doanh thu bán phòng</th><th>Ghi chú</th></tr></thead>
+            <thead><tr><th style="width: 25%">Thời gian</th><th style="width: 20%">Số đêm (OCC)</th><th style="width: 25%">Doanh thu dự kiến</th><th style="width: 30%">Ghi chú</th></tr></thead>
             <tbody id="tbody-cashflow"></tbody>
             <tfoot><tr class="bg-yellow"><td colspan="2" class="text-right">Tổng số doanh thu bán phòng 24 tháng:</td><td class="text-right text-red" id="out-total-dt"></td><td></td></tr></tfoot>
         </table>
         
-        <h3 style="text-align:center; color:#1a365d; margin-top:40px;">TỔNG KẾT HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
+        <h3 style="text-align:center; color:#1a365d; margin: 25px 0 10px 0; font-size: 16px;">TỔNG KẾT HIỆU QUẢ ĐẦU TƯ TẠI IBIZA PARTY RESORT</h3>
         <table>
             <tbody>
                 <tr><td class="text-left"><strong>Giá niêm yết Căn hộ (đã bao gồm VAT)</strong></td><td class="text-right" id="res-gia-ny"></td></tr>
                 <tr style="background:#f7fafc"><td class="text-left" style="font-style:italic">Tổng các khoản chiết khấu (Từ bảng tính giá)</td><td class="text-right" id="res-ck"></td></tr>
                 <tr><td class="text-left"><strong>Doanh thu bán phòng trong 24 tháng</strong></td><td class="text-right" id="res-dt"></td></tr>
-                <tr class="bg-yellow"><td class="text-left"><strong style="color:#c53030; font-size:18px">TỶ LỆ THU HỒI VỐN ĐẦU TƯ SAU 24 THÁNG</strong></td><td class="text-right text-red" id="res-roi" style="font-size:22px"></td></tr>
+                <tr class="bg-yellow"><td class="text-left"><strong style="color:#c53030; font-size:16px">TỶ LỆ THU HỒI VỐN ĐẦU TƯ SAU 24 THÁNG</strong></td><td class="text-right text-red" id="res-roi" style="font-size:18px"></td></tr>
             </tbody>
         </table>
+
+        <div class="copyright-footer">
+            Product by <strong>R&D FLV</strong>
+        </div>
     </div>
 </div>
 
@@ -158,7 +187,7 @@
                 let m = group[0];
                 totalDT += m.doanhThu;
                 
-                let note = "Dòng tiền thu trong tháng";
+                let note = "Dòng tiền dự kiến khai thác trong tháng";
                 if (monthsData.indexOf(m) === gapGCN - 1 && gapGCN > 0) {
                     note = "<strong style='color:#d53f8c'>Thời điểm nhận GCN</strong>";
                 }
@@ -203,7 +232,6 @@
             
             document.getElementById('in-gia-niem-yet').value = fmt.format(data.giaNiemYet || 0);
             
-            // Xử lý thông minh: Quét cả 2 biến để chắc chắn không bị trượt dữ liệu
             let realCK = data.tongChietKhau !== undefined ? data.tongChietKhau : (data.tongCK || 0);
             document.getElementById('in-tong-ck').value = fmt.format(realCK);
             
