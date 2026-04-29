@@ -33,7 +33,7 @@
 <body>
 <div class="container">
     <div class="header-actions no-print">
-        <a href="./index.html" class="nav-back">← Quay lại Bảng tính giá</a>
+        <a href="#" onclick="window.history.back(); return false;" class="nav-back">← Quay lại Bảng tính giá</a>
         <button class="btn-print" onclick="window.print()">🖨️ TẢI PDF / IN PHIẾU</button>
     </div>
 
@@ -46,10 +46,10 @@
             <div class="grid-2">
                 <div class="form-group"><label>Giá niêm yết (VNĐ)</label><input type="text" id="in-gia-niem-yet" readonly></div>
                 <div class="form-group"><label>Tổng chiết khấu (VNĐ)</label><input type="text" id="in-tong-ck" readonly></div>
-                <div class="form-group"><label>Tháng bàn giao QSD</label><input type="number" id="in-thang-bg"></div>
-                <div class="form-group"><label>Năm bàn giao QSD</label><input type="number" id="in-nam-bg"></div>
+                <div class="form-group"><label>Tháng nhận Bàn giao</label><input type="number" id="in-thang-bg"></div>
+                <div class="form-group"><label>Năm nhận Bàn giao</label><input type="number" id="in-nam-bg"></div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Số tháng chờ nhận GCN <br><span style="font-size:11px; font-weight:normal">(Thời gian này sẽ in chi tiết từng tháng một)</span></label>
+                    <label>Số tháng chờ nhận GCN <br><span style="font-size:11px; font-weight:normal">(Giai đoạn chờ sổ sẽ được in chi tiết từng tháng)</span></label>
                     <input type="number" id="in-thang-gcn" value="6">
                 </div>
             </div>
@@ -100,13 +100,12 @@
     }
 
     function calculateROI() {
-        // Lấy dữ liệu và cạo sạch các dấu chấm, phẩy để chống lỗi NaN
         const giaNY = Number(document.getElementById('in-gia-niem-yet').value.replace(/[^0-9]/g, '')) || 0;
         const ck = Number(document.getElementById('in-tong-ck').value.replace(/[^0-9]/g, '')) || 0;
         
         const sMonth = parseInt(document.getElementById('in-thang-bg').value) || 11;
         const sYear = parseInt(document.getElementById('in-nam-bg').value) || 2026;
-        const gapGCN = parseInt(document.getElementById('in-thang-gcn').value) || 0; // Khoảng thời gian in chi tiết
+        const gapGCN = parseInt(document.getElementById('in-thang-gcn').value) || 0; 
         
         const gPhong = parseFloat(document.getElementById('in-gia-phong').value) || 0;
         const oThap = (parseFloat(document.getElementById('in-occ-thap').value) || 0) / 100;
@@ -116,7 +115,7 @@
         let monthsData = [];
         let currM = sMonth, currY = sYear;
 
-        // Xây dựng chuỗi 24 tháng
+        // Sinh 24 tháng dòng tiền
         for (let i = 0; i < 24; i++) {
             let season = getSeason(currM);
             let occ = (season === 'cao') ? oCao : oThap;
@@ -129,17 +128,17 @@
             currM++; if (currM > 12) { currM = 1; currY++; }
         }
 
-        // THUẬT TOÁN GỘP BẢNG THÔNG MINH
+        // Tách và gộp thông minh
         let groupedData = [];
         let tempGroup = [];
 
         monthsData.forEach((item, index) => {
             if (index < gapGCN) {
-                // Giai đoạn 1: Trước khi nhận GCN -> In từng tháng tách biệt
+                // Trước khi nhận GCN: In ra từng tháng
                 if (tempGroup.length > 0) { groupedData.push([...tempGroup]); tempGroup = []; }
                 groupedData.push([item]);
             } else {
-                // Giai đoạn 2: Sau GCN -> Gộp theo mùa
+                // Sau khi nhận GCN: Gộp theo mùa
                 if (tempGroup.length === 0) {
                     tempGroup.push(item);
                 } else {
@@ -154,7 +153,7 @@
         });
         if (tempGroup.length > 0) groupedData.push([...tempGroup]);
 
-        // Đổ HTML
+        // Xuất ra HTML
         const tbody = document.getElementById('tbody-cashflow');
         tbody.innerHTML = '';
         let totalDT = 0;
@@ -164,10 +163,9 @@
                 let m = group[0];
                 totalDT += m.doanhThu;
                 
-                // Thêm Ghi chú đánh dấu Nhận GCN
-                let note = "Tính doanh thu lẻ";
+                let note = "Khai thác trong khi chờ GCN";
                 if (monthsData.indexOf(m) === gapGCN - 1 && gapGCN > 0) {
-                    note = "<strong style='color:#d53f8c'>Tháng nhận GCN</strong>";
+                    note = "<strong style='color:#d53f8c'>Thời điểm nhận GCN</strong>";
                 }
 
                 tbody.innerHTML += `<tr>
@@ -193,7 +191,6 @@
             }
         });
 
-        // Điền tổng kết
         document.getElementById('out-total-dt').innerText = fmt.format(totalDT);
         document.getElementById('res-gia-ny').innerText = fmt.format(giaNY);
         document.getElementById('res-ck').innerText = fmt.format(ck);
@@ -208,9 +205,11 @@
         const saved = localStorage.getItem('dataStep1');
         if (saved) {
             const data = JSON.parse(saved);
-            // Điền và format lại bằng dấu phân cách ngàn cho đẹp
-            document.getElementById('in-gia-niem-yet').value = fmt.format(data.giaNiemYet);
-            document.getElementById('in-tong-ck').value = fmt.format(data.tongCK);
+            document.getElementById('in-gia-niem-yet').value = fmt.format(data.giaNiemYet || 0);
+            
+            // Xử lý chuẩn xác biến tổng chiết khấu đã đổi từ file 1
+            document.getElementById('in-tong-ck').value = fmt.format(data.tongChietKhau || 0);
+            
             if(data.thangBG) document.getElementById('in-thang-bg').value = data.thangBG;
             if(data.namBG) document.getElementById('in-nam-bg').value = data.namBG;
             if(data.thangChoGCN !== undefined) document.getElementById('in-thang-gcn').value = data.thangChoGCN;
