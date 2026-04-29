@@ -41,13 +41,30 @@
         @media print { 
             .no-print { display: none !important; } 
             body { background: #fff; padding: 0; }
-            .container { box-shadow: none; padding: 0; border: none; max-width: 100%; } 
+            .container { box-shadow: none; padding: 0; border: none; max-width: 100%; width: 100%; margin: 0;} 
             .top-panels { gap: 15px; margin-bottom: 15px; }
             .data-panel { padding: 10px; border: 1px solid #ccc; background-color: #fff !important;}
             .form-group input { border: none !important; padding: 0; background: transparent; color: #000;}
             table { margin-bottom: 15px; }
             th, td { padding: 6px 8px; color: #000; border-color: #999;}
             .copyright-footer { color: #666; border-top: 1px solid #999; }
+            tr { page-break-inside: avoid; }
+        }
+
+        /* --- CHỈ THÊM CSS MỚI Ở ĐÂY CHO MOBILE & PDF --- */
+        @page { size: A4 portrait; margin: 15mm 10mm; }
+        
+        @media screen and (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; margin: 0; }
+            h1 { font-size: 18px; }
+            .top-panels { grid-template-columns: 1fr; gap: 15px; }
+            .grid-2 { grid-template-columns: 1fr; gap: 10px; }
+            .form-group { grid-column: span 1 !important; }
+            .header-actions { flex-direction: column; gap: 15px; align-items: stretch; text-align: center; }
+            .btn-calc { width: 100%; padding: 12px; font-size: 15px; }
+            /* Gắn scroll dọc ngang cho các bảng nếu bị tràn màn hình */
+            table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
         }
     </style>
 </head>
@@ -157,11 +174,9 @@
 
         monthsData.forEach((item, index) => {
             if (index < gapGCN) {
-                // Trước khi thanh toán đợt cuối: Tách lẻ từng tháng
                 if (tempGroup.length > 0) { groupedData.push([...tempGroup]); tempGroup = []; }
                 groupedData.push([item]);
             } else {
-                // Giai đoạn sau đó: Bắt đầu gộp
                 if (tempGroup.length === 0) {
                     tempGroup.push(item);
                 } else {
