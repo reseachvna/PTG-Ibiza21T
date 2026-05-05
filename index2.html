@@ -26,7 +26,13 @@
         
         /* Highlight 50% */
         .lever-box { background: #fff5f5; border: 2px solid #feb2b2; padding: 20px; border-radius: 12px; margin-bottom: 25px; text-align: center; }
-        .lever-title { color: #c53030; font-weight: bold; font-size: 18px; margin-bottom: 10px; text-transform: uppercase;}
+        .lever-title { color: #c53030; font-weight: bold; font-size: 18px; margin-bottom: 15px; text-transform: uppercase;}
+        
+        .benefits-list { background: #fff; border: 1px dashed #d53f8c; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: left; }
+        .benefits-list h4 { color: #d53f8c; margin-top: 0; margin-bottom: 10px; font-size: 15px; text-transform: uppercase;}
+        .benefits-list ul { margin: 0; padding-left: 20px; color: #4a5568; font-size: 14px; line-height: 1.6; }
+        .benefits-list li { margin-bottom: 6px; }
+
         .lever-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         .lever-item { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .lever-label { font-size: 12px; color: #718096; display: block; margin-bottom: 5px;}
@@ -51,6 +57,7 @@
             body { background: #fff; padding: 0; font-size: 11px; }
             .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0;} 
             .lever-box { border: 1px solid #999; background: #fff !important; }
+            .benefits-list { border: 1px solid #ccc; background: #f9f9f9; }
             .lever-item { border: 1px solid #eee; box-shadow: none; }
             th { background: #eee !important; color: #000 !important; border: 1px solid #999 !important;}
             td { border: 1px solid #999 !important; }
@@ -69,6 +76,16 @@
 
     <div class="lever-box">
         <div class="lever-title">Sở hữu & Kinh doanh chỉ với 50% vốn tự có</div>
+        
+        <div class="benefits-list">
+            <h4>🔥 TỔNG HỢP ĐẶC QUYỀN VÀ LỢI ÍCH KHÁCH HÀNG</h4>
+            <ul>
+                <li><strong>Giá trị chiết khấu nhận được:</strong> <span id="disp-tong-ck" style="color: #e53e3e; font-weight: bold; font-size: 15px;">0 VNĐ</span> (Đã được giảm trực tiếp vào giá bán).</li>
+                <li><strong>Đặc quyền nhận nhà sớm:</strong> Khách hàng thanh toán <strong style="color: #d53f8c;">50% giá trị HĐMB</strong> đã được nhận bàn giao quyền sử dụng căn hộ.</li>
+                <li><strong>Tối ưu dòng tiền:</strong> Hưởng trọn vẹn doanh thu khai thác kinh doanh trong <strong style="color: #38a169;">2 năm đầu với chính sách Miễn phí dịch vụ vận hành</strong>.</li>
+            </ul>
+        </div>
+
         <div class="lever-grid">
             <div class="lever-item">
                 <span class="lever-label">Giá bán sau CK</span>
@@ -93,9 +110,11 @@
             <h3>🔗 Dữ liệu từ Phiếu tính giá</h3>
             <div class="grid-2">
                 <div class="form-group"><label>Mã căn hộ</label><input type="text" id="in-ma-can" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Giá sau CK (VNĐ)</label><input type="text" id="in-gia-sau-ck" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Tháng bắt đầu vận hành</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
-                <div class="form-group"><label>Năm bắt đầu vận hành</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Tháng vận hành</label><input type="number" id="in-thang-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Giá niêm yết (VNĐ)</label><input type="text" id="in-gia-ny" class="input-readonly" readonly style="color:#2b6cb0 !important;"></div>
+                <div class="form-group"><label>Năm vận hành</label><input type="number" id="in-nam-bg" class="input-readonly" readonly></div>
+                <div class="form-group"><label>Tổng chiết khấu (VNĐ)</label><input type="text" id="in-tong-ck" class="input-readonly" readonly style="color:#e53e3e !important;"></div>
+                <div class="form-group"><label>Giá sau CK (VNĐ)</label><input type="text" id="in-gia-sau-ck" class="input-readonly" readonly style="color:#38a169 !important;"></div>
             </div>
         </div>
         <div class="data-panel">
@@ -250,13 +269,20 @@
             const giaSauCK = data.giaNiemYet - (data.tongChietKhau || 0);
             const von50 = Math.round(giaSauCK * 0.5);
 
+            // Gán dữ liệu vào input panel
             document.getElementById('in-ma-can').value = data.maCan || "";
+            document.getElementById('in-gia-ny').value = fmt.format(data.giaNiemYet);
+            document.getElementById('in-tong-ck').value = fmt.format(data.tongChietKhau || 0);
             document.getElementById('in-gia-sau-ck').value = fmt.format(giaSauCK);
             document.getElementById('in-thang-bg').value = data.thangBG || 11;
             document.getElementById('in-nam-bg').value = data.namBG || 2026;
 
+            // Gán dữ liệu vào bảng Highlight Lợi ích & 50%
             document.getElementById('disp-gia-sau-ck').innerText = fmt.format(giaSauCK) + " VNĐ";
             document.getElementById('disp-von-50').innerText = fmt.format(von50) + " VNĐ";
+            document.getElementById('disp-tong-ck').innerText = fmt.format(data.tongChietKhau || 0) + " VNĐ";
+            
+            // Gán dữ liệu cho tính toán kết quả ROI
             document.getElementById('res-von-thuc').innerText = fmt.format(von50) + " VNĐ";
         }
     });
