@@ -52,8 +52,8 @@
         #result-area { display: none; margin-top: 30px; } 
         .copyright-footer { text-align: right; margin-top: 20px; border-top: 1px dashed #cbd5e0; padding-top: 10px; font-size: 12px; color: #a0aec0; font-style: italic; }
 
-        /* ÉP KHUÔN A4 KHI IN */
-        @page { size: A4 portrait; margin: 10mm; }
+        /* ĐÃ SỬA LỖI MOBILE: Bỏ size A4, chỉ giữ lại margin */
+        @page { margin: 10mm; }
 
         @media print { 
             .no-print { display: none !important; } 
@@ -90,7 +90,7 @@
             table { margin-bottom: 15px; font-size: 11px; }
             th, td { border: 1px solid #999 !important; padding: 6px 8px; }
             th { background: #eee !important; color: #000 !important; }
-            .data-panel[style*="border"] { border-color: #999 !important; } /* Ghi đè viền màu bảng ROI */
+            .data-panel[style*="border"] { border-color: #999 !important; }
 
             .copyright-footer { margin-top: 15px; padding-top: 5px; font-size: 11px; color: #666; border-top: 1px solid #999;}
         }
