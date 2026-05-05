@@ -42,7 +42,7 @@
         .btn-add { background: #2b6cb0; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
         .btn-remove { background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;}
 
-        /* ĐÃ TINH CHỈNH NÚT TẠO PHIẾU CHUYÊN NGHIỆP HƠN */
+        /* Nút tạo phiếu cân đối */
         .btn-main { 
             background: #d53f8c; 
             color: white; 
@@ -96,8 +96,8 @@
         .copyright-footer { text-align: right; margin-top: 20px; border-top: 1px dashed #cbd5e0; padding-top: 10px; font-size: 12px; color: #a0aec0; font-style: italic; }
         .copyright-footer strong { color: #4a5568; font-weight: bold; font-style: normal;}
 
-        /* CSS ÉP TRANG A4 VÀ MOBILE */
-        @page { size: A4 portrait; margin: 10mm 10mm; }
+        /* PHỤC HỒI CSS ÉP TRANG A4 */
+        @page { size: A4 portrait; margin: 10mm; }
         
         @media print {
             .no-print { display: none !important; }
@@ -116,6 +116,7 @@
             table.schedule-table { margin-top: 10px; }
             .schedule-table th, .schedule-table td { padding: 6px; font-size: 12px; border-color: #999; color: #000; }
             tr { page-break-inside: avoid; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
             .copyright-footer { color: #666; border-top: 1px solid #999; margin-top: 10px; padding-top: 5px; }
         }
 
@@ -127,10 +128,7 @@
             .full-width { grid-column: span 1; }
             .info-grid-2col { grid-template-columns: 1fr; gap: 15px; }
             .mode-selector { flex-direction: column; gap: 15px; }
-            
-            /* Responsive cho Nút Tạo phiếu trên Mobile */
             .btn-main { width: 100%; min-width: unset; margin: 15px 0; }
-
             .print-header-actions { flex-direction: column; align-items: stretch; gap: 15px; text-align: center; }
             .action-buttons { flex-direction: column; display: flex; gap: 10px;}
             .action-buttons button { width: 100%; justify-content: center; }
@@ -638,11 +636,15 @@
         }).catch(err => console.log("Lưu log sheet thất bại:", err));
     }
 
+    // --- FIX LỖI IN TRÊN ĐIỆN THOẠI BẰNG SỰ KIỆN onafterprint ---
     function inPhieu() {
         document.getElementById('print-title-area').style.display = 'block';
         window.print();
-        setTimeout(() => document.getElementById('print-title-area').style.display = 'none', 500);
     }
+    
+    window.onafterprint = function() {
+        document.getElementById('print-title-area').style.display = 'none';
+    };
 
     function transferToIndex2() {
         const originalPrice = cleanAndParsePrice(document.getElementById('out-price-total').innerText);
